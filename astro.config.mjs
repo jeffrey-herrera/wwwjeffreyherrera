@@ -18,5 +18,7 @@ export default defineConfig({
     dataset: 'production',
     token: process.env.SANITY_API_TOKEN,
     useCdn: false,
+    studioBasePath: '/studio',
+    schemaPath: './src/sanity/schemas',
   }), react()]
 });
