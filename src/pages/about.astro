@@ -1,13 +1,107 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { useSanityClient, groq } from '@sanity/astro';
-import { PortableText } from 'astro-portabletext';
+import { getAboutContent } from '../sanity/queries';
+import type { About } from '../sanity/types';
 
-const query = groq`*[_type == "about"][0]`;
-const about = await useSanityClient().fetch(query);
+const about = await getAboutContent();
 ---
 
 <Layout>
-  <h1 class="text-4xl font-bold">{about.title}</h1>
-  <PortableText value={about.body} />
+  <div class="max-w-4xl mx-auto p-6">
+    {about ? (
+      <>
+        <header class="mb-12 text-center">
+          <h1 class="text-4xl font-bold mb-6">{about.title}</h1>
+          
+          {about.profileImage && (
+            <div class="w-48 h-48 mx-auto mb-8 rounded-full overflow-hidden">
+              <img 
+                src={`https://cdn.sanity.io/images/${import.meta.env.PUBLIC_SANITY_PROJECT_ID}/${import.meta.env.PUBLIC_SANITY_DATASET}/${about.profileImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`}
+                alt={about.profileImage.alt || 'Profile photo'}
+                class="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </header>
+
+        <section class="mb-12">
+          <h2 class="text-2xl font-bold mb-6">About Me</h2>
+          <p class="text-lg leading-relaxed text-gray-700">{about.bio}</p>
+        </section>
+
+        {about.skills && about.skills.length > 0 && (
+          <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Skills</h2>
+            <div class="flex flex-wrap gap-3">
+              {about.skills.map(skill => (
+                <span class="bg-gray-100 text-gray-800 px-4 py-2 rounded-full">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {about.experience && about.experience.length > 0 && (
+          <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Experience</h2>
+            <div class="space-y-8">
+              {about.experience.map(exp => (
+                <div class="border-l-4 border-blue-500 pl-6">
+                  <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-xl font-semibold">{exp.role}</h3>
+                    <span class="text-sm text-gray-500">{exp.period}</span>
+                  </div>
+                  <h4 class="text-lg text-gray-600 mb-3">{exp.company}</h4>
+                  {exp.description && (
+                    <p class="text-gray-700 leading-relaxed">{exp.description}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {about.contact && (
+          <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Get In Touch</h2>
+            <div class="bg-gray-50 rounded-lg p-6">
+              <div class="space-y-4">
+                <div>
+                  <span class="font-medium">Email: </span>
+                  <a href={`mailto:${about.contact.email}`} class="text-blue-600 hover:underline">
+                    {about.contact.email}
+                  </a>
+                </div>
+                
+                <div class="flex gap-6">
+                  {about.contact.linkedin && (
+                    <a href={about.contact.linkedin} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+                      LinkedIn
+                    </a>
+                  )}
+                  {about.contact.twitter && (
+                    <a href={about.contact.twitter} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+                      Twitter
+                    </a>
+                  )}
+                  {about.contact.github && (
+                    <a href={about.contact.github} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">
+                      GitHub
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+      </>
+    ) : (
+      <div class="text-center py-16">
+        <h1 class="text-4xl font-bold mb-4">About</h1>
+        <p class="text-gray-500 text-lg">About content not available yet.</p>
+        <p class="text-gray-400 mt-2">Add an About document in your Sanity Studio to get started!</p>
+      </div>
+    )}
+  </div>
 </Layout>

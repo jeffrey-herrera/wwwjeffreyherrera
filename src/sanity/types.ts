@@ -47,3 +47,38 @@ export interface Playlist extends SanityDocument {
   month: string
   featuredTrack: string
 }
+
+// About page content
+export interface About extends SanityDocument {
+  _type: 'about'
+  title: string
+  bio: string
+  profileImage: SanityImage
+  skills: string[]
+  experience: {
+    company: string
+    role: string
+    period: string
+    description: string
+  }[]
+  contact: {
+    email: string
+    linkedin?: string
+    twitter?: string
+    github?: string
+  }
+}
+
+// Playground content (experimental posts, images, writing)
+export interface Playground extends SanityDocument {
+  _type: 'playground'
+  title: string
+  type: 'image' | 'writing' | 'experiment'
+  description?: string
+  content?: string // Rich text for writing
+  image?: SanityImage
+  tags: string[]
+  publishedAt: string
+  slug: Slug
+  featured: boolean
+}

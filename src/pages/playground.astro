@@ -1,33 +1,36 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAllProjects } from '../sanity/queries';
-import type { Project } from '../sanity/types';
+import { getAllPlayground, getAllProjects } from '../sanity/queries';
+import type { Project, Playground } from '../sanity/types';
 
+// Get both projects (portfolio) and playground content
 const projects = await getAllProjects();
+const playgroundContent = await getAllPlayground();
 
-// Group projects by category
-const projectsByCategory = projects.reduce((acc, project) => {
-  const category = project.category || 'Other';
-  if (!acc[category]) {
-    acc[category] = [];
+// Group playground content by type
+const playgroundByType = playgroundContent.reduce((acc, item) => {
+  const type = item.type;
+  if (!acc[type]) {
+    acc[type] = [];
   }
-  acc[category].push(project);
+  acc[type].push(item);
   return acc;
-}, {} as Record<string, Project[]>);
+}, {} as Record<string, Playground[]>);
 ---
 
 <Layout>
   <div class="max-w-6xl mx-auto p-6">
     <header class="mb-12">
       <h1 class="text-4xl font-bold mb-4">Playground</h1>
-      <p class="text-xl text-gray-600">A collection of projects spanning design, development, and creative exploration</p>
+      <p class="text-xl text-gray-600">Experiments, writing, images, and creative explorations</p>
     </header>
 
-    {Object.entries(projectsByCategory).map(([category, categoryProjects]) => (
+    <!-- Portfolio Projects Section -->
+    {projects.length > 0 && (
       <section class="mb-16">
-        <h2 class="text-3xl font-bold mb-8">{category}</h2>
+        <h2 class="text-3xl font-bold mb-8">Portfolio Projects</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {categoryProjects.map((project: Project) => (
+          {projects.map((project: Project) => (
             <article class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
               <div class="p-6">
                 <div class="flex justify-between items-start mb-4">
@@ -51,18 +54,84 @@ const projectsByCategory = projects.reduce((acc, project) => {
                       Featured
                     </span>
                   )}
-                  <a 
-                    href={`/playground/${project.slug.current}`} 
-                    class="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    View Project →
-                  </a>
+                  <span class="text-sm text-gray-500">{project.category}</span>
                 </div>
               </div>
             </article>
           ))}
         </div>
       </section>
+    )}
+
+    <!-- Playground Content Sections -->
+    {Object.entries(playgroundByType).map(([type, items]) => (
+      <section class="mb-16">
+        <h2 class="text-3xl font-bold mb-8 capitalize">{type}</h2>
+        
+        {type === 'writing' ? (
+          <!-- Writing Layout -->
+          <div class="space-y-8">
+            {items.map((item: Playground) => (
+              <article class="bg-white border rounded-lg p-8 hover:shadow-lg transition-shadow">
+                <h3 class="text-2xl font-bold mb-4">{item.title}</h3>
+                {item.description && (
+                  <p class="text-gray-600 mb-4 leading-relaxed">{item.description}</p>
+                )}
+                <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                  <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
+                  {item.featured && (
+                    <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Featured</span>
+                  )}
+                </div>
+                <a 
+                  href={`/playground/${item.slug.current}`} 
+                  class="text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  Read More →
+                </a>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <!-- Grid Layout for Images/Experiments -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {items.map((item: Playground) => (
+              <article class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                {item.image && (
+                  <div class="aspect-square bg-gray-200">
+                    <img 
+                      src={`https://cdn.sanity.io/images/${import.meta.env.PUBLIC_SANITY_PROJECT_ID}/${import.meta.env.PUBLIC_SANITY_DATASET}/${item.image.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`}
+                      alt={item.image.alt || item.title}
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                
+                <div class="p-4">
+                  <h3 class="font-bold mb-2">{item.title}</h3>
+                  {item.description && (
+                    <p class="text-sm text-gray-600 mb-3">{item.description}</p>
+                  )}
+                  
+                  <div class="flex justify-between items-center text-xs text-gray-500">
+                    <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
+                    {item.featured && (
+                      <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Featured</span>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
     ))}
+    
+    {playgroundContent.length === 0 && projects.length === 0 && (
+      <div class="text-center py-16">
+        <p class="text-gray-500 text-lg">No playground content available yet.</p>
+        <p class="text-gray-400 mt-2">Add some content in your Sanity Studio to get started!</p>
+      </div>
+    )}
   </div>
 </Layout>
