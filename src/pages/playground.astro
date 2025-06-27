@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useSanityClient, groq } from 'astro-sanity';
+import { SanityImage } from 'astro-sanity';
+
+const query = groq`*[_type == "playground"]`;
+const playgrounds = await useSanityClient().fetch(query);
+---
+
+<Layout>
+  <h1 class="text-4xl font-bold">Playground</h1>
+  <ul>
+    {playgrounds.map(playground => (
+      <li>
+        <a href={playground.url} target="_blank" rel="noopener noreferrer">
+          <SanityImage image={playground.image} alt={playground.title} />
+          <h2>{playground.title}</h2>
+          <p>{playground.description}</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Layout>

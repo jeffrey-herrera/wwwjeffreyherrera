@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useSanityClient, groq } from '@sanity/astro';
+import { PortableText } from 'astro-portabletext';
+
+const query = groq`*[_type == "about"][0]`;
+const about = await useSanityClient().fetch(query);
+---
+
+<Layout>
+  <h1 class="text-4xl font-bold">{about.title}</h1>
+  <PortableText value={about.body} />
+</Layout>

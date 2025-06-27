@@ -1,0 +1,30 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { useSanityClient, groq } from 'astro-sanity';
+
+const query = groq`*[_type == "playlist"] | order(year desc)`;
+const playlists = await useSanityClient().fetch(query);
+
+const playlistsByYear = playlists.reduce((acc, playlist) => {
+  const year = playlist.year;
+  if (!acc[year]) {
+    acc[year] = [];
+  }
+  acc[year].push(playlist);
+  return acc;
+}, {});
+---
+
+<Layout>
+  <h1 class="text-4xl font-bold">Playlists</h1>
+  {Object.entries(playlistsByYear).map(([year, playlists]) => (
+    <section>
+      <h2 class="text-2xl font-bold">{year}</h2>
+      <ul>
+        {playlists.map(playlist => (
+          <li>{playlist.title}</li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</Layout>
