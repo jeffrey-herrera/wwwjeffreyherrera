@@ -1,9 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { useSanityClient, groq } from 'astro-sanity';
+import { getAllPlaylists } from '../sanity/queries';
+import type { Playlist } from '../sanity/types';
 
-const query = groq`*[_type == "playlist"] | order(year desc)`;
-const playlists = await useSanityClient().fetch(query);
+const playlists = await getAllPlaylists();
 
 const playlistsByYear = playlists.reduce((acc, playlist) => {
   const year = playlist.year;
@@ -12,19 +12,62 @@ const playlistsByYear = playlists.reduce((acc, playlist) => {
   }
   acc[year].push(playlist);
   return acc;
-}, {});
+}, {} as Record<number, Playlist[]>);
 ---
 
 <Layout>
-  <h1 class="text-4xl font-bold">Playlists</h1>
-  {Object.entries(playlistsByYear).map(([year, playlists]) => (
-    <section>
-      <h2 class="text-2xl font-bold">{year}</h2>
-      <ul>
-        {playlists.map(playlist => (
-          <li>{playlist.title}</li>
-        ))}
-      </ul>
-    </section>
-  ))}
+  <div class="max-w-6xl mx-auto p-6">
+    <header class="mb-12">
+      <h1 class="text-4xl font-bold mb-4">Playlists</h1>
+      <p class="text-xl text-gray-600">Monthly music curation spanning different moods and moments</p>
+    </header>
+
+    {Object.entries(playlistsByYear)
+      .sort(([a], [b]) => Number(b) - Number(a))
+      .map(([year, yearPlaylists]) => (
+        <section class="mb-12">
+          <h2 class="text-3xl font-bold mb-6">{year}</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {yearPlaylists.map((playlist: Playlist) => (
+              <div class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+                {playlist.coverArt && (
+                  <div class="aspect-square bg-gray-200">
+                    <img 
+                      src={`https://cdn.sanity.io/images/${import.meta.env.PUBLIC_SANITY_PROJECT_ID}/${import.meta.env.PUBLIC_SANITY_DATASET}/${playlist.coverArt.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`}
+                      alt={playlist.coverArt.alt || playlist.name}
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
+                
+                <div class="p-4">
+                  <h3 class="font-bold text-lg mb-2">{playlist.name}</h3>
+                  
+                  {playlist.featuredTrack && (
+                    <p class="text-sm text-gray-600 mb-3">🎵 {playlist.featuredTrack}</p>
+                  )}
+                  
+                  <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                    <span>{playlist.month} {playlist.year}</span>
+                    {playlist.featured && (
+                      <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Featured</span>
+                    )}
+                  </div>
+                  
+                  <a 
+                    href={playlist.spotifyUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="w-full bg-green-600 text-white text-center py-2 px-4 rounded hover:bg-green-700 transition-colors inline-block"
+                  >
+                    Listen on Spotify
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
 </Layout>

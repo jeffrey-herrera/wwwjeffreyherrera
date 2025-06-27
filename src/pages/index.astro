@@ -1,16 +1,71 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { useSanityClient, groq } from '@sanity/astro';
+import { getFeaturedProjects, getFeaturedPlaylists } from '../sanity/queries';
+import type { Project, Playlist } from '../sanity/types';
 
-const query = groq`*[_type == "project"]`;
-const projects = await useSanityClient().fetch(query);
+const featuredProjects = await getFeaturedProjects();
+const featuredPlaylists = await getFeaturedPlaylists();
 ---
 
 <Layout>
-  <h1 class="text-4xl font-bold">Work</h1>
-  <ul>
-    {projects.map(project => (
-      <li>{project.title}</li>
-    ))}
-  </ul>
+  <div class="max-w-4xl mx-auto p-6">
+    <!-- Hero Section -->
+    <section class="mb-12">
+      <h1 class="text-5xl font-bold mb-4">Jeffrey Herrera</h1>
+      <p class="text-xl text-gray-600">Designer, Developer & Music Curator</p>
+    </section>
+
+    <!-- Featured Projects -->
+    <section class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">Featured Work</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {featuredProjects.map((project: Project) => (
+          <div class="border rounded-lg p-6 hover:shadow-lg transition-shadow">
+            <h3 class="text-xl font-semibold mb-2">{project.title}</h3>
+            <p class="text-gray-600 mb-3">{project.description}</p>
+            <div class="flex flex-wrap gap-2 mb-3">
+              {project.tags.map(tag => (
+                <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">{tag}</span>
+              ))}
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">{project.year}</span>
+              <a href={`/playground/${project.slug.current}`} class="text-blue-600 hover:underline">
+                View Project →
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/playground" class="inline-block bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition-colors">
+          View All Projects
+        </a>
+      </div>
+    </section>
+
+    <!-- Featured Playlists -->
+    <section>
+      <h2 class="text-3xl font-bold mb-6">Recent Playlists</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {featuredPlaylists.slice(0, 6).map((playlist: Playlist) => (
+          <div class="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+            <h3 class="font-semibold mb-2">{playlist.name}</h3>
+            <p class="text-sm text-gray-600 mb-3">{playlist.featuredTrack}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-xs text-gray-500">{playlist.month} {playlist.year}</span>
+              <a href={playlist.spotifyUrl} target="_blank" class="text-green-600 hover:underline text-sm">
+                Spotify →
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div class="text-center mt-8">
+        <a href="/playlists" class="inline-block bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition-colors">
+          View All Playlists
+        </a>
+      </div>
+    </section>
+  </div>
 </Layout>
