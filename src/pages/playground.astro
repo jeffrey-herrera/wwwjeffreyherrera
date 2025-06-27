@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { getAllPlayground, getAllProjects } from '../sanity/queries';
 import type { Project, Playground } from '../sanity/types';
+import { PlaygroundImage } from '../components/SanityImage';
 
 // Get both projects (portfolio) and playground content
 const projects = await getAllProjects();
@@ -99,10 +100,12 @@ const playgroundByType = playgroundContent.reduce((acc, item) => {
               <article class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                 {item.image && (
                   <div class="aspect-square bg-gray-200">
-                    <img 
-                      src={`https://cdn.sanity.io/images/${import.meta.env.PUBLIC_SANITY_PROJECT_ID}/${import.meta.env.PUBLIC_SANITY_DATASET}/${item.image.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`}
+                    <PlaygroundImage 
+                      source={item.image}
                       alt={item.image.alt || item.title}
-                      class="w-full h-full object-cover"
+                      variant="thumbnail"
+                      className="w-full h-full object-cover"
+                      client:load
                     />
                   </div>
                 )}

@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { getAboutContent } from '../sanity/queries';
 import type { About } from '../sanity/types';
+import { Avatar } from '../components/SanityImage';
 
 const about = await getAboutContent();
 ---
@@ -14,11 +15,14 @@ const about = await getAboutContent();
           <h1 class="text-4xl font-bold mb-6">{about.title}</h1>
           
           {about.profileImage && (
-            <div class="w-48 h-48 mx-auto mb-8 rounded-full overflow-hidden">
-              <img 
-                src={`https://cdn.sanity.io/images/${import.meta.env.PUBLIC_SANITY_PROJECT_ID}/${import.meta.env.PUBLIC_SANITY_DATASET}/${about.profileImage.asset._ref.replace('image-', '').replace('-jpg', '.jpg').replace('-png', '.png')}`}
+            <div class="mx-auto mb-8">
+              <Avatar 
+                source={about.profileImage}
                 alt={about.profileImage.alt || 'Profile photo'}
-                class="w-full h-full object-cover"
+                variant="large"
+                className="mx-auto"
+                priority={true}
+                client:load
               />
             </div>
           )}
