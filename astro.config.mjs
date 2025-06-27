@@ -16,9 +16,7 @@ export default defineConfig({
   integrations: [sanity({
     projectId: 'wtlgwnno',
     dataset: 'production',
-    token: process.env.SANITY_API_TOKEN,
     useCdn: false,
     studioBasePath: '/studio',
-    schemaPath: './src/sanity/schemas',
   }), react()]
 });

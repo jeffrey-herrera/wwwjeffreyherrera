@@ -1,9 +1,12 @@
 import { defineType, defineField } from 'sanity'
+import React from 'react'
+import { Palette } from 'phosphor-react'
 
 export default defineType({
   name: 'playground',
   title: 'Playground',
   type: 'document',
+  icon: () => React.createElement(Palette, { size: 18, color: '#FF6900', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'title',
@@ -102,6 +105,14 @@ export default defineType({
   ],
   orderings: [
     {
+      title: 'Featured First',
+      name: 'featuredFirst',
+      by: [
+        { field: 'featured', direction: 'desc' },
+        { field: 'publishedAt', direction: 'desc' }
+      ]
+    },
+    {
       title: 'Published Date, Newest',
       name: 'publishedAtDesc',
       by: [{ field: 'publishedAt', direction: 'desc' }]
@@ -116,13 +127,31 @@ export default defineType({
     select: {
       title: 'title',
       type: 'type',
+      featured: 'featured',
+      publishedAt: 'publishedAt',
+      tags: 'tags',
       media: 'image'
     },
     prepare(selection) {
-      const { title, type, media } = selection
+      const { title, type, featured, publishedAt, tags, media } = selection
+      
+             // Format type with emoji
+       const typeEmojis: Record<string, string> = {
+         'image': '🖼️',
+         'writing': '✍️',
+         'experiment': '🧪'
+       }
+       
+       const typeLabel = type ? `${typeEmojis[type] || '🎭'} ${type.charAt(0).toUpperCase() + type.slice(1)}` : '🎭 Playground item'
+      const featuredBadge = featured ? '⭐ ' : ''
+      const tagCount = tags?.length ? ` • ${tags.length} tags` : ''
+      
+      // Format date
+      const date = publishedAt ? new Date(publishedAt).toLocaleDateString() : 'Draft'
+      
       return {
-        title: title,
-        subtitle: type ? `${type.charAt(0).toUpperCase() + type.slice(1)}` : 'Playground item',
+        title: `${featuredBadge}${title}`,
+        subtitle: `${typeLabel} • ${date}${tagCount}${featured ? ' • Featured' : ''}`,
         media: media
       }
     }

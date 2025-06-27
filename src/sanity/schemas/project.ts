@@ -1,9 +1,12 @@
 import { defineType, defineField } from 'sanity'
+import React from 'react'
+import { Rocket } from 'phosphor-react'
 
 export default defineType({
   name: 'project',
   title: 'Project',
   type: 'document',
+  icon: () => React.createElement(Rocket, { size: 18, color: '#FF6900', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'title',
@@ -33,21 +36,14 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Web Development', value: 'web-development' },
-          { title: 'Design', value: 'design' },
-          { title: 'Mobile', value: 'mobile' },
-          { title: 'Branding', value: 'branding' },
-          { title: 'Other', value: 'other' }
+          { title: 'Brand', value: 'brand' },
+          { title: 'Physical', value: 'physical' },
+          { title: 'Digital', value: 'digital' }
         ]
       },
       validation: (Rule) => Rule.required()
     }),
-    defineField({
-      name: 'year',
-      title: 'Year',
-      type: 'number',
-      validation: (Rule) => Rule.required().min(2000).max(new Date().getFullYear())
-    }),
+
     defineField({
       name: 'tags',
       title: 'Tags',
@@ -92,21 +88,43 @@ export default defineType({
   ],
   orderings: [
     {
-      title: 'Year, Newest',
-      name: 'yearDesc',
-      by: [{ field: 'year', direction: 'desc' }]
+      title: 'Featured First',
+      name: 'featuredFirst',
+      by: [
+        { field: 'featured', direction: 'desc' },
+        { field: 'title', direction: 'asc' }
+      ]
     },
     {
-      title: 'Year, Oldest',
-      name: 'yearAsc',
-      by: [{ field: 'year', direction: 'asc' }]
+      title: 'Title A-Z',
+      name: 'titleAsc',
+      by: [{ field: 'title', direction: 'asc' }]
+    },
+    {
+      title: 'Title Z-A',
+      name: 'titleDesc',
+      by: [{ field: 'title', direction: 'desc' }]
     }
   ],
   preview: {
     select: {
       title: 'title',
-      subtitle: 'category',
-      media: 'projectImage'
+      category: 'category',
+      featured: 'featured',
+      media: 'projectImage',
+      tags: 'tags'
+    },
+    prepare(selection) {
+      const { title, category, featured, media, tags } = selection
+      const categoryLabel = category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Project'
+      const featuredBadge = featured ? '⭐ ' : ''
+      const tagCount = tags?.length ? ` • ${tags.length} tags` : ''
+      
+      return {
+        title: `${featuredBadge}${title}`,
+        subtitle: `${categoryLabel}${tagCount}${featured ? ' • Featured' : ''}`,
+        media: media
+      }
     }
   }
 })

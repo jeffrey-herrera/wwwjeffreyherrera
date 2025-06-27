@@ -1,9 +1,12 @@
 import { defineType, defineField } from 'sanity'
+import React from 'react'
+import { MusicNotes } from 'phosphor-react'
 
 export default defineType({
   name: 'playlist',
   title: 'Playlist',
   type: 'document',
+  icon: () => React.createElement(MusicNotes, { size: 18, color: '#FF6900', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'name',
@@ -99,6 +102,14 @@ export default defineType({
   ],
   orderings: [
     {
+      title: 'Featured First',
+      name: 'featuredFirst',
+      by: [
+        { field: 'featured', direction: 'desc' },
+        { field: 'publishedAt', direction: 'desc' }
+      ]
+    },
+    {
       title: 'Published Date, Newest',
       name: 'publishedAtDesc',
       by: [{ field: 'publishedAt', direction: 'desc' }]
@@ -112,15 +123,23 @@ export default defineType({
   preview: {
     select: {
       title: 'name',
-      subtitle: 'month',
+      month: 'month',
       year: 'year',
+      featured: 'featured',
+      featuredTrack: 'featuredTrack',
+      publishedAt: 'publishedAt',
       media: 'coverArt'
     },
     prepare(selection) {
-      const { title, subtitle, year, media } = selection
+      const { title, month, year, featured, featuredTrack, publishedAt, media } = selection
+      
+      const featuredBadge = featured ? '🌟 ' : ''
+      const trackInfo = featuredTrack ? ` • ${featuredTrack}` : ''
+      const date = publishedAt ? new Date(publishedAt).toLocaleDateString() : 'Draft'
+      
       return {
-        title: title,
-        subtitle: `${subtitle} ${year}`,
+        title: `${featuredBadge}🎵 ${title}`,
+        subtitle: `${month} ${year} • ${date}${trackInfo}${featured ? ' • Featured' : ''}`,
         media: media
       }
     }

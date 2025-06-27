@@ -1,9 +1,12 @@
 import { defineType, defineField } from 'sanity'
+import React from 'react'
+import { User } from 'phosphor-react'
 
 export default defineType({
   name: 'about',
   title: 'About Page',
   type: 'document',
+  icon: () => React.createElement(User, { size: 18, color: '#FF6900', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'title',
