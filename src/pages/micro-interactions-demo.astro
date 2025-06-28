@@ -431,62 +431,300 @@ const featuredProjects = projects.slice(0, 6)
 </style>
 
 <script>
-  import { defaultMicroInteractions, AnimationUtils } from '../utils/microInteractions'
-
   class MicroInteractionsDemo {
-    private interactionCount = 0
-    private fpsCounter = 0
-    private lastFrameTime = 0
+    interactionCount = 0
+    fpsCounter = 0
+    lastFrameTime = 0
+    scrollObserver = null
 
     constructor() {
-      this.setupDemoFeatures()
+      this.setupCustomCursor()
+      this.setupScrollReveal()
+      this.setupHoverEffects()
+      this.setupClickFeedback()
       this.setupPerformanceMonitoring()
       this.setupAnalytics()
+      this.setupKeyboardNavigation()
     }
 
-    private setupDemoFeatures(): void {
-      // Setup typewriter effect for headings
-      const headings = document.querySelectorAll('h1, h2')
-      headings.forEach((heading, index) => {
-        const text = heading.textContent || ''
-        setTimeout(() => {
-          AnimationUtils.typewriter(heading as HTMLElement, text, 30)
-        }, index * 500)
+    setupCustomCursor() {
+      // Create custom cursor
+      const cursor = document.createElement('div')
+      cursor.className = 'custom-cursor'
+      cursor.innerHTML = `
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
+      `
+      document.body.appendChild(cursor)
+
+      let mouseX = 0, mouseY = 0, cursorX = 0, cursorY = 0
+
+      // Track mouse movement
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX
+        mouseY = e.clientY
       })
 
-      // Setup count-up animations for metrics
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+      // Smooth cursor following
+      const updateCursor = () => {
+        const dx = mouseX - cursorX
+        const dy = mouseY - cursorY
+        
+        cursorX += dx * 0.1
+        cursorY += dy * 0.1
+        
+        cursor.style.transform = `translate(${cursorX}px, ${cursorY}px)`
+        requestAnimationFrame(updateCursor)
+      }
+      updateCursor()
+
+      // Cursor state changes
+      document.addEventListener('mousedown', () => cursor.classList.add('clicking'))
+      document.addEventListener('mouseup', () => cursor.classList.remove('clicking'))
+
+      // Interactive element detection
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.matches('a, button, [role="button"], .interactive')) {
+          cursor.classList.add('hovering')
+        }
+      })
+
+      document.addEventListener('mouseout', (e) => {
+        if (e.target.matches('a, button, [role="button"], .interactive')) {
+          cursor.classList.remove('hovering')
+        }
+      })
+    }
+
+    setupScrollReveal() {
+      if (!('IntersectionObserver' in window)) return
+
+      this.scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, index) => {
           if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement
-            const targetValue = parseInt(element.textContent || '0')
-            AnimationUtils.countUp(element, targetValue, 2000)
-            observer.unobserve(element)
+            const element = entry.target
+            const config = this.getElementConfig(element)
+            
+            setTimeout(() => {
+              this.triggerScrollReveal(element, config)
+            }, config.delay + (config.stagger || 0) * index)
+            
+            this.scrollObserver.unobserve(element)
           }
         })
+      }, {
+        threshold: 0.1,
+        rootMargin: '-50px 0px'
       })
 
-      document.querySelectorAll('#fps-counter, #interaction-count').forEach(el => {
-        observer.observe(el)
-      })
-
-      // Setup parallax effects
-      document.querySelectorAll('.parallax').forEach(el => {
-        AnimationUtils.createParallax(el as HTMLElement, 0.3)
-      })
-
-      // Setup staggered animations for grids
-      document.querySelectorAll('.grid').forEach(grid => {
-        const items = grid.querySelectorAll('.grid > *')
-        AnimationUtils.staggerAnimation(items, (element, index) => {
-          element.classList.add('stagger-animate')
-        }, 100)
+      // Observe elements with scroll reveal
+      document.querySelectorAll('[data-scroll-reveal]').forEach(el => {
+        this.scrollObserver.observe(el)
       })
     }
 
-    private setupPerformanceMonitoring(): void {
+    getElementConfig(element) {
+      try {
+        const configAttr = element.getAttribute('data-scroll-reveal')
+        if (configAttr) {
+          return { 
+            animation: 'fadeIn', 
+            duration: 600, 
+            delay: 0, 
+            stagger: 100,
+            ...JSON.parse(configAttr) 
+          }
+        }
+      } catch (error) {
+        console.warn('Invalid config data:', error)
+      }
+      return { animation: 'fadeIn', duration: 600, delay: 0, stagger: 100 }
+    }
+
+    triggerScrollReveal(element, config) {
+      element.style.opacity = '0'
+      element.style.transform = this.getInitialTransform(config.animation)
+      element.style.transition = `all ${config.duration}ms cubic-bezier(0.4, 0, 0.2, 1)`
+      
+      requestAnimationFrame(() => {
+        element.style.opacity = '1'
+        element.style.transform = 'none'
+        element.classList.add('scroll-revealed')
+      })
+    }
+
+    getInitialTransform(animation) {
+      switch (animation) {
+        case 'slideUp': return 'translateY(50px)'
+        case 'slideLeft': return 'translateX(50px)'
+        case 'slideRight': return 'translateX(-50px)'
+        case 'scale': return 'scale(0.8)'
+        case 'rotate': return 'rotate(5deg)'
+        default: return 'translateY(20px)'
+      }
+    }
+
+    setupHoverEffects() {
+      document.addEventListener('mouseover', (e) => {
+        if (e.target.matches('[data-hover-effect]')) {
+          this.triggerHoverEffect(e.target, 'enter')
+        }
+      })
+
+      document.addEventListener('mouseout', (e) => {
+        if (e.target.matches('[data-hover-effect]')) {
+          this.triggerHoverEffect(e.target, 'leave')
+        }
+      })
+    }
+
+    triggerHoverEffect(element, state) {
+      const config = this.getHoverConfig(element)
+      
+      if (state === 'enter') {
+        element.style.transition = `all ${config.duration}ms ${config.easing}`
+        element.style.transform = `
+          scale(${config.scale}) 
+          rotate(${config.rotate}deg) 
+          translateY(${config.translateY}px)
+        `
+        element.style.filter = `
+          brightness(${config.brightness}) 
+          saturate(${config.saturate}) 
+          blur(${config.blur}px)
+        `
+        element.classList.add('hover-active')
+      } else {
+        element.style.transform = 'none'
+        element.style.filter = 'none'
+        element.classList.remove('hover-active')
+      }
+    }
+
+    getHoverConfig(element) {
+      const defaults = {
+        scale: 1.05,
+        rotate: 0,
+        translateY: -2,
+        brightness: 1.1,
+        saturate: 1.2,
+        blur: 0,
+        duration: 200,
+        easing: 'ease-out'
+      }
+      
+      try {
+        const configAttr = element.getAttribute('data-hover-effect')
+        if (configAttr) {
+          return { ...defaults, ...JSON.parse(configAttr) }
+        }
+      } catch (error) {
+        console.warn('Invalid hover config:', error)
+      }
+      return defaults
+    }
+
+    setupClickFeedback() {
+      document.addEventListener('click', (e) => {
+        // Ripple effect for buttons
+        if (e.target.matches('button, [role="button"], .btn')) {
+          this.createRippleEffect(e.target, e)
+        }
+
+        // Bounce effect for cards
+        if (e.target.matches('.card, .project-card, .playlist-card')) {
+          this.triggerBounceEffect(e.target)
+        }
+      })
+    }
+
+    createRippleEffect(element, event) {
+      const rect = element.getBoundingClientRect()
+      const size = Math.max(rect.width, rect.height)
+      const x = event.clientX - rect.left - size / 2
+      const y = event.clientY - rect.top - size / 2
+      
+      const ripple = document.createElement('div')
+      ripple.className = 'ripple-effect'
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(0);
+        animation: ripple 600ms ease-out;
+        left: ${x}px;
+        top: ${y}px;
+        width: ${size}px;
+        height: ${size}px;
+        pointer-events: none;
+      `
+      
+      element.style.position = 'relative'
+      element.style.overflow = 'hidden'
+      element.appendChild(ripple)
+      
+      setTimeout(() => ripple.remove(), 600)
+    }
+
+    triggerBounceEffect(element) {
+      element.style.animation = 'bounce-click 300ms ease-out'
+      setTimeout(() => {
+        element.style.animation = ''
+      }, 300)
+    }
+
+    setupKeyboardNavigation() {
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          document.body.classList.add('keyboard-nav')
+          
+          setTimeout(() => {
+            const focusedElement = document.activeElement
+            if (focusedElement) {
+              this.triggerFocusAnimation(focusedElement)
+            }
+          }, 50)
+        }
+
+        if (e.key === 'Escape') {
+          // Cancel animations or close modals
+          document.querySelectorAll('.hover-active').forEach(el => {
+            el.classList.remove('hover-active')
+            el.style.transform = 'none'
+            el.style.filter = 'none'
+          })
+        }
+      })
+
+      document.addEventListener('mousedown', () => {
+        document.body.classList.remove('keyboard-nav')
+      })
+    }
+
+    triggerFocusAnimation(element) {
+      element.classList.add('focus-animated')
+      
+      const focusRing = document.createElement('div')
+      focusRing.className = 'focus-ring'
+      focusRing.style.cssText = `
+        position: absolute;
+        inset: -4px;
+        border: 2px solid #f97316;
+        border-radius: inherit;
+        pointer-events: none;
+        animation: focus-ring 300ms ease-out;
+        z-index: 1000;
+      `
+      
+      element.style.position = 'relative'
+      element.appendChild(focusRing)
+      
+      setTimeout(() => focusRing.remove(), 300)
+    }
+
+    setupPerformanceMonitoring() {
       // Monitor FPS
-      const monitorFPS = (timestamp: number) => {
+      const monitorFPS = (timestamp) => {
         if (this.lastFrameTime) {
           const delta = timestamp - this.lastFrameTime
           this.fpsCounter = Math.round(1000 / delta)
@@ -500,21 +738,9 @@ const featuredProjects = projects.slice(0, 6)
         requestAnimationFrame(monitorFPS)
       }
       requestAnimationFrame(monitorFPS)
-
-      // Monitor memory usage if available
-      if ('memory' in performance) {
-        setInterval(() => {
-          const memory = (performance as any).memory
-          console.log('Memory usage:', {
-            used: Math.round(memory.usedJSHeapSize / 1048576),
-            total: Math.round(memory.totalJSHeapSize / 1048576),
-            limit: Math.round(memory.jsHeapSizeLimit / 1048576)
-          })
-        }, 5000)
-      }
     }
 
-    private setupAnalytics(): void {
+    setupAnalytics() {
       // Track all interactions
       document.addEventListener('click', () => {
         this.interactionCount++
@@ -525,8 +751,7 @@ const featuredProjects = projects.slice(0, 6)
       })
 
       document.addEventListener('mouseover', (e) => {
-        const target = e.target as Element
-        if (target.matches('.interactive')) {
+        if (e.target.matches('.interactive')) {
           this.interactionCount++
           const counterElement = document.getElementById('interaction-count')
           if (counterElement) {
@@ -534,28 +759,58 @@ const featuredProjects = projects.slice(0, 6)
           }
         }
       })
+    }
 
-      // Track performance metrics
-      if (window.analytics) {
-        setInterval(() => {
-          window.analytics.trackPerformance({
-            fps: this.fpsCounter,
-            interactions: this.interactionCount,
-            timestamp: Date.now()
-          })
-        }, 10000)
+    // Utility: Count up animation
+    countUp(element, target, duration = 1000) {
+      const start = parseInt(element.textContent || '0')
+      const increment = (target - start) / (duration / 16)
+      let current = start
+
+      const updateCount = () => {
+        current += increment
+        if (current < target) {
+          element.textContent = Math.floor(current).toString()
+          requestAnimationFrame(updateCount)
+        } else {
+          element.textContent = target.toString()
+        }
       }
+
+      updateCount()
+    }
+
+    // Utility: Typewriter effect
+    async typewriter(element, text, speed = 50) {
+      element.textContent = ''
+      let index = 0
+
+      return new Promise((resolve) => {
+        const typeChar = () => {
+          if (index < text.length) {
+            element.textContent += text.charAt(index)
+            index++
+            setTimeout(typeChar, speed)
+          } else {
+            resolve()
+          }
+        }
+        typeChar()
+      })
     }
   }
 
-  // Initialize demo when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new MicroInteractionsDemo()
+    })
+  } else {
     new MicroInteractionsDemo()
-  })
+  }
 
   // Re-initialize on page navigation
   document.addEventListener('astro:page-load', () => {
     new MicroInteractionsDemo()
-    defaultMicroInteractions.observeNewElements()
   })
 </script>
