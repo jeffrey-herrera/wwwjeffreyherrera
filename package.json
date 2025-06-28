@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
+    "dev:studio": "sanity dev",
     "build": "astro build",
     "build:analyze": "astro build --verbose",
     "preview": "astro preview",

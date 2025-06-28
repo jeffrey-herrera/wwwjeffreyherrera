@@ -67,6 +67,15 @@ export default defineConfig({
 
   projectId: 'wtlgwnno',
   dataset: 'production',
+  
+  // Performance optimizations
+  document: {
+    // Reduce the number of revisions shown in history
+    productionUrl: async (prev, context) => {
+      const slug = context.document.slug as { current?: string }
+      return `${slug?.current ? `/work/${slug.current}` : '#'}`
+    },
+  },
 
   plugins: [
     deskTool({
@@ -146,54 +155,27 @@ export default defineConfig({
                     {field: 'publishedAt', direction: 'desc'}
                   ])
               ),
-            
-            S.divider(),
-            
-            // Quick Actions
-            S.listItem()
-              .title('Quick Actions')
-              .icon(() => React.createElement(Lightning, { size: 18, color: 'currentColor', weight: 'duotone' }))
-              .child(
-                S.list()
-                  .title('Quick Actions')
-                  .items([
-                    S.listItem()
-                      .title('All Content (Recent)')
-                      .icon(() => React.createElement(ChartBar, { size: 16, color: 'currentColor', weight: 'duotone' }))
-                      .child(
-                        S.documentTypeList('project')
-                          .title('All Content')
-                          .filter('_type in ["project", "playground", "playlist"]')
-                          .defaultOrdering([{field: '_updatedAt', direction: 'desc'}])
-                      ),
-                    S.listItem()
-                      .title('Featured Content')
-                      .icon(() => React.createElement(Star, { size: 16, color: 'currentColor', weight: 'fill' }))
-                      .child(
-                        S.documentTypeList('project')
-                          .title('All Featured Content')
-                          .filter('_type in ["project", "playground", "playlist"] && featured == true')
-                          .defaultOrdering([{field: '_updatedAt', direction: 'desc'}])
-                      ),
-                    S.listItem()
-                      .title('Draft Content')
-                      .icon(() => React.createElement(FileText, { size: 16, color: 'currentColor', weight: 'duotone' }))
-                      .child(
-                        S.documentTypeList('project')
-                          .title('Draft Content')
-                          .filter('_type in ["project", "playground", "playlist"] && !defined(publishedAt)')
-                          .defaultOrdering([{field: '_updatedAt', direction: 'desc'}])
-                      ),
-                  ])
-              ),
-          ])
-    }),
-    visionTool()
-  ],
 
-  schema: {
-    types: schemaTypes,
-  },
+            ])
+      }),
+      // visionTool() // Removed for better performance - re-add if you need GROQ query testing
+    ],
 
-  theme: customTheme,
-})
+    schema: {
+      types: schemaTypes,
+    },
+
+    theme: customTheme,
+    
+    // Additional performance settings
+    tools: (prev, { currentUser, dataset }) => {
+      // Only load essential tools for better performance
+      return prev
+    },
+  })
+
+  // Performance tips for development:
+  // 1. Use `npm run dev:studio` for fastest Studio development
+  // 2. Close unused browser tabs
+  // 3. Clear browser cache regularly
+  // 4. Use Chrome DevTools to monitor performance

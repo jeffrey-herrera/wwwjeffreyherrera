@@ -56,14 +56,16 @@ export function WelcomeWidget() {
 
     fetchStats()
 
-    // Set up real-time listener for document changes
+    // Set up real-time listener for document changes (throttled)
+    let timeoutId: NodeJS.Timeout
     const subscription = client.listen('*[_type in ["project", "playground", "playlist"]]').subscribe((update) => {
-      // Re-fetch stats when any document is created, updated, or deleted
-      fetchStats()
+      // Throttle updates to avoid excessive re-fetching
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(fetchStats, 1000)
     })
 
-    // Also refresh stats every 30 seconds as a fallback
-    const interval = setInterval(fetchStats, 30000)
+    // Refresh stats every 2 minutes instead of 30 seconds
+    const interval = setInterval(fetchStats, 120000)
 
     // Cleanup function
     return () => {

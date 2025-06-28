@@ -6,6 +6,7 @@ import { getAbout } from '../sanity/queries';
 import type { About } from '../sanity/types';
 import SanityImage from '../components/SanityImage.astro';
 import PortableTextComponent from '../components/PortableText.tsx';
+import StackedProfileImage from '../components/StackedProfileImage.astro';
 
 const about = await getAbout();
 
@@ -16,57 +17,20 @@ if (!about) {
 
 <Layout>
   <div class="py-6 bg-stone-50 container-grid">
-    {(
-      <>
-        <section class="fixed bottom-8 left-8 z-10" data-scroll-reveal='{"animation": "slideUp", "delay": 800, "duration": 600}'>
-          {about.profileImage && (
-            <div class="w-64 aspect-3/4">
-              <SanityImage 
-                source={about.profileImage}
-                alt={about.profileImage.alt || about.title}
-                variant="profile"
-                class="w-full h-full object-cover rounded"
-                priority={true}
-              />
-            </div>
-          )}
-        </section>
-        <section class="my-16 col-span-3 col-start-9" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
-          <div class="prose prose-stone max-w-none">
-            <PortableTextComponent value={about.bio} client:load />
-          </div>
-          {about.contact && (
-              <div data-scroll-reveal='{"animation": "slideUp", "delay": 400, "duration": 600}'>
-                <p class="font-semibold mt-12 mb-6">Get In Touch</p>
-                <div class="bg-white rounded-lg p-6 shadow-sm">
-                  <div class="space-y-4">
-                    <div>
-                      <span class="font-medium">Email: </span>
-                      <a href={`mailto:${about.contact.email}`} class="text-orange-600 hover:underline">
-                        {about.contact.email}
-                      </a>
-                    </div>
-                    
-                    <div class="flex gap-6">
-                      {about.contact.instagram && (
-                        <a href={about.contact.instagram} target="_blank" rel="noopener noreferrer" class="text-orange-600 hover:underline">
-                          Instagram
-                        </a>
-                      )}
-                      {about.contact.linkedin && (
-                        <a href={about.contact.linkedin} target="_blank" rel="noopener noreferrer" class="text-orange-600 hover:underline">
-                          LinkedIn
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-          )}
-        </section>
-
-      </>
-    )}
+    <section class="fixed bottom-8 left-8 z-10" data-scroll-reveal='{"animation": "slideUp", "delay": 800, "duration": 600}'>
+      {about.profileImage && (
+        <StackedProfileImage 
+          profileImage={about.profileImage}
+          title={about.title}
+        />
+      )}
+    </section>
+    <section class="my-16 col-span-4 col-start-9" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
+      <div class="prose prose-stone max-w-none">
+        <PortableTextComponent value={about.bio} client:load />
+      </div>
+      <a href={`mailto:${about.contact.email}`} class="text-orange-600 hover:underline">
+    </section>
   </div>
 </Layout>
 

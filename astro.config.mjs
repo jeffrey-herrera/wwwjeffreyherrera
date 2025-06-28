@@ -57,7 +57,23 @@ export default defineConfig({
     },
     // Optimize dependencies
     optimizeDeps: {
-      include: ['@sanity/client', 'phosphor-react', 'react', 'react-dom', '@portabletext/react'],
+      include: [
+        '@sanity/client', 
+        'phosphor-react', 
+        'react', 
+        'react-dom', 
+        '@portabletext/react',
+        'sanity',
+        'sanity/desk',
+        '@sanity/vision'
+      ],
+      exclude: ['@sanity/ui'], // Let Sanity handle its own UI bundle
+    },
+    // Improve dev server performance
+    server: {
+      fs: {
+        allow: ['..']
+      }
     },
   },
 
