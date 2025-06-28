@@ -69,6 +69,14 @@ const { playlist } = Astro.props;
 </style>
 
 <script>
+  // Add type declarations for analytics functions
+  declare global {
+    interface Window {
+      trackContentInteraction: (contentType: string, contentId: string, contentTitle: string, action: string) => void;
+      trackPlaylistPlay: (playlistId: string, playlistName: string) => void;
+    }
+  }
+
   // Optimized 3D card effect with analytics tracking
   let animationId: number;
   

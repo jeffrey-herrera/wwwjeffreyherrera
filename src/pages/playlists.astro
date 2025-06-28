@@ -26,18 +26,20 @@ const sortedYears = Object.keys(playlistsByYear)
   description="Monthly music curation spanning different moods and moments. Discover curated playlists by Jeffrey Herrera."
 >
   <div class="py-16">
-    <header class="mb-12">
+    <header class="mb-24">
       <h1 class="text-4xl font-serif mb-4">Playlists</h1>
       <p class="text-xl text-stone-500">Monthly music curation spanning different moods and moments</p>
     </header>
 
     <main class="space-y-16">
-      {sortedYears.map(year => (
+      {sortedYears.map((year, yearIndex) => (
         <section>
           <h2 class="text-2xl font-serif mb-8 text-stone-800">{year}</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-            {playlistsByYear[year].map(playlist => (
-              <PlaylistCard playlist={playlist} />
+            {playlistsByYear[year].map((playlist, index) => (
+              <div data-scroll-reveal={`{"animation": "slideUp", "delay": ${index * 50}, "duration": 500}`}>
+                <PlaylistCard playlist={playlist} />
+              </div>
             ))}
           </div>
         </section>
@@ -45,5 +47,108 @@ const sortedYears = Object.keys(playlistsByYear)
     </main>
   </div>
 </Layout>
+
+<style>
+  /* Scroll reveal animations */
+  [data-scroll-reveal] {
+    opacity: 0;
+    transition: none;
+  }
+
+  [data-scroll-reveal].scroll-revealed {
+    opacity: 1;
+  }
+</style>
+
+<script>
+  // Scroll reveal functionality
+  class ScrollReveal {
+    private observer: IntersectionObserver | null = null;
+
+    constructor() {
+      this.setupScrollReveal();
+    }
+
+    private setupScrollReveal(): void {
+      if (!('IntersectionObserver' in window)) return;
+
+      this.observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const element = entry.target as HTMLElement;
+            const config = this.getElementConfig(element);
+            
+            setTimeout(() => {
+              this.triggerScrollReveal(element, config);
+            }, config.delay || 0);
+            
+            this.observer?.unobserve(element);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '-50px 0px'
+      });
+
+      // Observe elements with scroll reveal
+      document.querySelectorAll('[data-scroll-reveal]').forEach(el => {
+        const element = el as HTMLElement;
+        const config = this.getElementConfig(element);
+        
+        // Set initial state
+        element.style.opacity = '0';
+        element.style.transform = this.getInitialTransform(config.animation);
+        element.style.transition = 'none';
+        
+        this.observer?.observe(element);
+      });
+    }
+
+    private getElementConfig(element: HTMLElement) {
+      try {
+        const configAttr = element.getAttribute('data-scroll-reveal');
+        if (configAttr) {
+          return { 
+            animation: 'fadeIn', 
+            duration: 300, 
+            delay: 0, 
+            ...JSON.parse(configAttr) 
+          };
+        }
+      } catch (error) {
+        console.warn('Invalid scroll reveal config:', error);
+      }
+      return { animation: 'fadeIn', duration: 300, delay: 0 };
+    }
+
+    private triggerScrollReveal(element: HTMLElement, config: any): void {
+      element.style.transition = `all ${config.duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          element.style.opacity = '1';
+          element.style.transform = 'none';
+          element.classList.add('scroll-revealed');
+        });
+      });
+    }
+
+    private getInitialTransform(animation: string): string {
+      switch (animation) {
+        case 'slideUp': return 'translateY(30px)';
+        case 'slideLeft': return 'translateX(30px)';
+        case 'slideRight': return 'translateX(-30px)';
+        case 'scale': return 'scale(0.9)';
+        case 'fadeIn': 
+        default: return 'translateY(20px)';
+      }
+    }
+  }
+
+  // Initialize scroll reveal when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new ScrollReveal();
+  });
+</script>
 
 

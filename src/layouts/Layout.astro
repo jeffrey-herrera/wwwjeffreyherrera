@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
-import AnalyticsDashboard from '../components/AnalyticsDashboard.astro';
 
 interface Props {
   title?: string;
@@ -87,45 +86,7 @@ const ogImage = new URL(image, baseUrl).href;
 <body class="bg-stone-50 px-8">
   <Header />
   <slot />
-  <AnalyticsDashboard />
   
-  <!-- Initialize Analytics -->
-  <script>
-    import { analytics, trackContentView, trackContentInteraction, trackPlaylistPlay, trackConnectionExplore } from '../utils/analytics'
-    
-    // Make tracking functions globally available
-    window.trackContentView = trackContentView
-    window.trackContentInteraction = trackContentInteraction
-    window.trackPlaylistPlay = trackPlaylistPlay
-    window.trackConnectionExplore = trackConnectionExplore
-    
-    // Track page view
-    document.addEventListener('DOMContentLoaded', () => {
-      const path = window.location.pathname
-      let contentType: 'project' | 'playlist' | 'playground' | 'connection' = 'project'
-      let contentId = 'page'
-      let contentTitle = document.title
-      
-      if (path.includes('/playlists')) {
-        contentType = 'playlist'
-        contentId = 'playlists-page'
-        contentTitle = 'Playlists'
-      } else if (path.includes('/playground')) {
-        contentType = 'playground'  
-        contentId = 'playground-page'
-        contentTitle = 'Playground'
-      } else if (path.includes('/connections')) {
-        contentType = 'connection'
-        contentId = 'connections-page'
-        contentTitle = 'Creative Connections'
-      } else if (path.includes('/work/')) {
-        contentType = 'project'
-        contentId = path.split('/work/')[1] || 'unknown'
-        contentTitle = document.title
-      }
-      
-      trackContentView(contentType, contentId, contentTitle)
-    })
-  </script>
+
 </body>
 </html>

@@ -66,7 +66,7 @@ export default defineConfig({
     sanity({
       projectId: 'wtlgwnno',
       dataset: 'production',
-      useCdn: true, // Enable CDN for production
+      useCdn: process.env.NODE_ENV === 'production', // CDN only in production
       studioBasePath: '/studio',
     }), 
   ],

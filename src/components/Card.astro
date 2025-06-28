@@ -77,7 +77,8 @@ const CardElement = href ? 'a' : 'div';
 
   /* Focus states for accessibility */
   .card:focus-visible {
-    @apply outline-2 outline-orange-500 outline-offset-2;
+    outline: 2px solid #f97316;
+    outline-offset: 2px;
   }
 
   /* Ensure text content is properly spaced */
@@ -107,9 +108,9 @@ const CardElement = href ? 'a' : 'div';
 </style>
 
 <script>
-  function createCardRippleEffect(element, event) {
+  function createCardRippleEffect(element: HTMLElement, event: MouseEvent): void {
     // Only add ripple if it's a clickable card
-    if (!element.href && !element.onclick) return
+    if (!(element as any).href && !(element as any).onclick) return
     
     const rect = element.getBoundingClientRect()
     const size = Math.max(rect.width, rect.height)
@@ -142,9 +143,10 @@ const CardElement = href ? 'a' : 'div';
   }
 
   // Add ripple effect to clickable cards
-  document.addEventListener('click', (e) => {
-    const card = e.target.closest('.card')
-    if (card && (card.href || card.onclick)) {
+  document.addEventListener('click', (e: MouseEvent) => {
+    if (!e.target) return
+    const card = (e.target as HTMLElement).closest('.card') as HTMLElement | null
+    if (card && ((card as any).href || (card as any).onclick)) {
       createCardRippleEffect(card, e)
     }
   })

@@ -18,45 +18,23 @@ const currentPath = Astro.url.pathname;
     <nav class="col-span-4">
       <ul class="flex gap-4">
         <li class="relative">
-          <a href="/" class="hover:text-orange-500 transition-colors flex items-center">
-            {currentPath === '/' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+          <a href="/" class={`transition-colors ${currentPath === '/' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>Work<sup class="text-xs ml-1">{counts.projects}</sup></span>
           </a>
         </li>
         <li class="relative">
-          <a href="/about" class="hover:text-orange-500 transition-colors flex items-center">
-            {currentPath === '/about' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+          <a href="/about" class={`transition-colors ${currentPath === '/about' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>About</span>
           </a>
         </li>
         <li class="relative">
-          <a href="/playground" class="hover:text-orange-500 transition-colors flex items-center">
-            {currentPath === '/playground' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+          <a href="/playground" class={`transition-colors ${currentPath === '/playground' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>Playground<sup class="text-xs ml-1">{counts.playground}</sup></span>
           </a>
         </li>
         <li class="relative">
-          <a href="/playlists" class="hover:text-orange-500 transition-colors flex items-center">
-            {currentPath === '/playlists' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+          <a href="/playlists" class={`transition-colors ${currentPath === '/playlists' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>Playlists<sup class="text-xs ml-1">{counts.playlists}</sup></span>
-          </a>
-        </li>
-        <li class="relative">
-          <a href="/showcase" class="hover:text-orange-500 transition-colors flex items-center">
-            {currentPath === '/showcase' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
-            <span>Showcase</span>
-          </a>
-        </li>
-        <li class="relative">
-          <a href="/image-optimization-demo" class="hover:text-orange-500 transition-colors flex items-center text-xs">
-            {currentPath === '/image-optimization-demo' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
-            <span>Images</span>
-          </a>
-        </li>
-        <li class="relative">
-          <a href="/micro-interactions-demo" class="hover:text-orange-500 transition-colors flex items-center text-xs">
-            {currentPath === '/micro-interactions-demo' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
-            <span>UX</span>
           </a>
         </li>
       </ul>

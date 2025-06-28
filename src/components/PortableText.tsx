@@ -8,9 +8,9 @@ interface PortableTextComponentProps {
 
 const components = {
   block: {
-    normal: ({ children }: any) => <p className="leading-relaxed text-stone-700 mb-4">{children}</p>,
-    h2: ({ children }: any) => <h2 className="text-2xl font-bold text-stone-900 mb-4 mt-8">{children}</h2>,
-    h3: ({ children }: any) => <h3 className="text-xl font-semibold text-stone-900 mb-3 mt-6">{children}</h3>,
+    normal: ({ children }: any) => <p className="leading-relaxed text-stone-950 mb-4">{children}</p>,
+    h2: ({ children }: any) => <h2 className="text-2xl font-semibold text-stone-950 mb-4 mt-8">{children}</h2>,
+    h3: ({ children }: any) => <h3 className="text-xl font-semibold text-stone-950 mb-3 mt-6">{children}</h3>,
     blockquote: ({ children }: any) => (
       <blockquote className="border-l-4 border-orange-500 pl-6 my-6 italic text-stone-700">
         {children}
