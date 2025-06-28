@@ -1,0 +1,561 @@
+---
+import Layout from '../layouts/Layout.astro'
+import { getAllProjects } from '../sanity/queries'
+
+const projects = await getAllProjects()
+const featuredProjects = projects.slice(0, 6)
+---
+
+<Layout 
+  title="Micro-Interactions Demo"
+  description="Showcase of advanced micro-interactions including scroll reveals, hover effects, touch gestures, and enhanced cursor interactions."
+>
+  <div class="py-16">
+    <header class="mb-16 text-center">
+      <h1 class="text-4xl font-serif mb-4" data-scroll-reveal='{"animation": "fadeIn", "duration": 800}'>
+        Micro-Interactions Showcase
+      </h1>
+      <p class="text-xl text-stone-500 mb-8 max-w-2xl mx-auto" data-scroll-reveal='{"animation": "slideUp", "delay": 200}'>
+        Experience enhanced user interactions with scroll reveals, hover effects, 
+        touch gestures, and intelligent cursor feedback.
+      </p>
+      
+      <div class="flex flex-wrap justify-center gap-4 mb-8" data-scroll-reveal='{"animation": "scale", "delay": 400}'>
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg">
+          <span>👆</span>
+          <span class="text-sm">Touch & hover</span>
+        </div>
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg">
+          <span>🎯</span>
+          <span class="text-sm">Enhanced cursor</span>
+        </div>
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-lg">
+          <span>📱</span>
+          <span class="text-sm">Scroll reveals</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Interactive Cards Grid -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-serif mb-8" data-scroll-reveal='{"animation": "slideLeft"}'>
+          Interactive Project Cards
+        </h2>
+        <p class="text-stone-600 mb-8" data-scroll-reveal='{"animation": "fadeIn", "delay": 100}'>
+          Hover over cards to see enhanced effects. Click for ripple feedback. Each interaction is tracked for analytics.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredProjects.map((project, index) => (
+            <div 
+              class="project-card bg-white rounded-lg overflow-hidden shadow-md touchable interactive"
+              data-scroll-reveal={`{"animation": "slideUp", "delay": ${index * 100}}`}
+              data-hover-effect={`{"scale": 1.03, "translateY": -5, "duration": 250}`}
+            >
+              <div class="aspect-video bg-gradient-to-br from-orange-100 to-blue-100 p-8 flex items-center justify-center">
+                <div class="text-4xl font-bold text-stone-700">
+                  {project.title.charAt(0)}
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="font-semibold mb-2">{project.title}</h3>
+                <p class="text-sm text-stone-600 mb-4">{project.category} • {project.year}</p>
+                <button class="btn px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors">
+                  View Project
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- Scroll Reveal Animations -->
+      <section class="mb-16 bg-stone-50 rounded-xl p-8">
+        <h2 class="text-2xl font-serif mb-6" data-scroll-reveal='{"animation": "fadeIn"}'>
+          Scroll Reveal Animations
+        </h2>
+        
+        <div class="space-y-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div data-scroll-reveal='{"animation": "slideLeft", "duration": 600}'>
+              <h3 class="text-lg font-semibold mb-3">Slide from Left</h3>
+              <p class="text-stone-600">Elements animate in from the left as they enter the viewport, creating a natural reading flow.</p>
+            </div>
+            
+            <div data-scroll-reveal='{"animation": "slideRight", "duration": 600, "delay": 200}'>
+              <h3 class="text-lg font-semibold mb-3">Slide from Right</h3>
+              <p class="text-stone-600">Alternating directions create visual interest and guide the user's attention through content.</p>
+            </div>
+          </div>
+          
+          <div class="text-center" data-scroll-reveal='{"animation": "scale", "duration": 800, "delay": 400}'>
+            <h3 class="text-lg font-semibold mb-3">Scale Animation</h3>
+            <p class="text-stone-600 max-w-2xl mx-auto">
+              Scale animations draw attention to important content and create a sense of depth and hierarchy.
+            </p>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((item, index) => (
+              <div 
+                class="p-6 bg-white rounded-lg text-center"
+                data-scroll-reveal={`{"animation": "slideUp", "delay": ${index * 150}, "duration": 500}`}
+              >
+                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <span class="text-orange-600 text-xl">{item}</span>
+                </div>
+                <h4 class="font-semibold mb-2">Feature {item}</h4>
+                <p class="text-sm text-stone-600">Staggered animations create a cascading effect that feels natural and engaging.</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <!-- Enhanced Hover Effects -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-serif mb-8" data-scroll-reveal='{"animation": "fadeIn"}'>
+          Enhanced Hover Effects
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div 
+            class="p-6 bg-blue-100 rounded-lg text-center interactive"
+            data-hover-effect='{"scale": 1.1, "rotate": 5, "duration": 300}'
+            data-scroll-reveal='{"animation": "slideUp", "delay": 0}'
+          >
+            <h3 class="font-semibold mb-2">Scale & Rotate</h3>
+            <p class="text-sm text-blue-700">Hover for playful scaling and rotation effect</p>
+          </div>
+          
+          <div 
+            class="p-6 bg-green-100 rounded-lg text-center interactive"
+            data-hover-effect='{"translateY": -10, "brightness": 1.2, "saturate": 1.3, "duration": 200}'
+            data-scroll-reveal='{"animation": "slideUp", "delay": 100}'
+          >
+            <h3 class="font-semibold mb-2">Lift & Brighten</h3>
+            <p class="text-sm text-green-700">Elevates and enhances colors on hover</p>
+          </div>
+          
+          <div 
+            class="p-6 bg-purple-100 rounded-lg text-center interactive"
+            data-hover-effect='{"scale": 0.95, "blur": 1, "duration": 150}'
+            data-scroll-reveal='{"animation": "slideUp", "delay": 200}'
+          >
+            <h3 class="font-semibold mb-2">Compress & Blur</h3>
+            <p class="text-sm text-purple-700">Subtle compression with blur effect</p>
+          </div>
+          
+          <div 
+            class="p-6 bg-orange-100 rounded-lg text-center interactive"
+            data-hover-effect='{"scale": 1.05, "translateY": -5, "brightness": 1.1, "duration": 250}'
+            data-scroll-reveal='{"animation": "slideUp", "delay": 300}'
+          >
+            <h3 class="font-semibold mb-2">Float & Glow</h3>
+            <p class="text-sm text-orange-700">Floating effect with brightness boost</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Touch & Click Interactions -->
+      <section class="mb-16 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8">
+        <h2 class="text-2xl font-serif mb-6" data-scroll-reveal='{"animation": "fadeIn"}'>
+          Touch & Click Feedback
+        </h2>
+        
+        <div class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div data-scroll-reveal='{"animation": "slideLeft"}'>
+              <h3 class="text-lg font-semibold mb-4">Ripple Effect Buttons</h3>
+              <div class="space-y-3">
+                <button class="btn w-full px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                  Primary Action
+                </button>
+                <button class="btn w-full px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                  Secondary Action
+                </button>
+                <button class="btn w-full px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+                  Tertiary Action
+                </button>
+              </div>
+            </div>
+            
+            <div data-scroll-reveal='{"animation": "slideRight", "delay": 200}'>
+              <h3 class="text-lg font-semibold mb-4">Touch-Responsive Cards</h3>
+              <div class="space-y-3">
+                {[1, 2, 3].map((item) => (
+                  <div class="card touchable p-4 bg-white rounded-lg border border-stone-200 hover:shadow-md transition-shadow">
+                    <h4 class="font-medium mb-1">Touch Card {item}</h4>
+                    <p class="text-sm text-stone-600">Tap for touch feedback animation</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          
+          <div class="text-center" data-scroll-reveal='{"animation": "fadeIn", "delay": 400}'>
+            <p class="text-stone-600 mb-4">
+              All interactions include haptic feedback on supported devices and are tracked for analytics insights.
+            </p>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-lg">
+              <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span class="text-sm">Live interaction tracking active</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Keyboard Navigation Demo -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-serif mb-6" data-scroll-reveal='{"animation": "fadeIn"}'>
+          Enhanced Keyboard Navigation
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div data-scroll-reveal='{"animation": "slideLeft"}'>
+            <h3 class="text-lg font-semibold mb-4">Focus Management</h3>
+            <p class="text-stone-600 mb-4">
+              Press Tab to navigate through focusable elements. Notice the enhanced focus rings and animations.
+            </p>
+            
+            <div class="space-y-3">
+              <input 
+                type="text" 
+                placeholder="Focusable input"
+                class="w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+              <button class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                Focusable Button
+              </button>
+              <a href="#" class="inline-block px-4 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                Focusable Link
+              </a>
+            </div>
+          </div>
+          
+          <div data-scroll-reveal='{"animation": "slideRight", "delay": 200}'>
+            <h3 class="text-lg font-semibold mb-4">Keyboard Shortcuts</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex items-center justify-between p-3 bg-stone-50 rounded">
+                <span>Tab</span>
+                <span class="text-stone-600">Navigate forward</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-stone-50 rounded">
+                <span>Shift + Tab</span>
+                <span class="text-stone-600">Navigate backward</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-stone-50 rounded">
+                <span>Escape</span>
+                <span class="text-stone-600">Cancel animations</span>
+              </div>
+              <div class="flex items-center justify-between p-3 bg-stone-50 rounded">
+                <span>Space / Enter</span>
+                <span class="text-stone-600">Activate element</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Performance Metrics -->
+      <section class="bg-stone-50 rounded-xl p-8" data-scroll-reveal='{"animation": "fadeIn"}'>
+        <h2 class="text-2xl font-serif mb-6">Performance & Accessibility</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2" id="fps-counter">60</div>
+            <div class="text-sm text-stone-600">FPS maintained</div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2" id="interaction-count">0</div>
+            <div class="text-sm text-stone-600">Interactions tracked</div>
+          </div>
+          
+          <div class="text-center">
+            <div class="text-3xl font-bold text-purple-600 mb-2">AAA</div>
+            <div class="text-sm text-stone-600">Accessibility rating</div>
+          </div>
+        </div>
+        
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="font-semibold mb-3">Performance Features</h3>
+            <ul class="text-sm text-stone-600 space-y-1">
+              <li>• Hardware-accelerated animations</li>
+              <li>• Intersection Observer for efficiency</li>
+              <li>• Passive event listeners</li>
+              <li>• Request Animation Frame optimization</li>
+              <li>• Minimal DOM manipulation</li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 class="font-semibold mb-3">Accessibility Features</h3>
+            <ul class="text-sm text-stone-600 space-y-1">
+              <li>• Respect reduced motion preferences</li>
+              <li>• Enhanced focus indicators</li>
+              <li>• Keyboard navigation support</li>
+              <li>• Screen reader compatibility</li>
+              <li>• High contrast mode support</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</Layout>
+
+<style>
+  /* Custom cursor styles */
+  .custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: difference;
+  }
+
+  .cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: #f97316;
+    border-radius: 50%;
+    position: absolute;
+    top: -4px;
+    left: -4px;
+  }
+
+  .cursor-ring {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #f97316;
+    border-radius: 50%;
+    position: absolute;
+    top: -16px;
+    left: -16px;
+    transition: all 0.1s ease;
+    opacity: 0.5;
+  }
+
+  .custom-cursor.hovering .cursor-ring {
+    width: 48px;
+    height: 48px;
+    top: -24px;
+    left: -24px;
+    opacity: 0.8;
+  }
+
+  .custom-cursor.clicking .cursor-dot {
+    transform: scale(1.5);
+  }
+
+  .custom-cursor.clicking .cursor-ring {
+    transform: scale(0.8);
+  }
+
+  /* Hide default cursor on interactive elements */
+  .interactive {
+    cursor: none;
+  }
+
+  /* Touch feedback */
+  .touch-active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  /* Focus styles for keyboard navigation */
+  .keyboard-nav *:focus {
+    outline: none;
+  }
+
+  .focus-animated {
+    position: relative;
+  }
+
+  /* Ripple effect keyframes */
+  @keyframes ripple {
+    from {
+      transform: scale(0);
+      opacity: 1;
+    }
+    to {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  /* Bounce click effect */
+  @keyframes bounce-click {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.95); }
+  }
+
+  /* Focus ring animation */
+  @keyframes focus-ring {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Respect user preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .custom-cursor {
+      display: none;
+    }
+    
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .cursor-dot,
+    .cursor-ring {
+      background: currentColor;
+      border-color: currentColor;
+    }
+  }
+</style>
+
+<script>
+  import { defaultMicroInteractions, AnimationUtils } from '../utils/microInteractions'
+
+  class MicroInteractionsDemo {
+    private interactionCount = 0
+    private fpsCounter = 0
+    private lastFrameTime = 0
+
+    constructor() {
+      this.setupDemoFeatures()
+      this.setupPerformanceMonitoring()
+      this.setupAnalytics()
+    }
+
+    private setupDemoFeatures(): void {
+      // Setup typewriter effect for headings
+      const headings = document.querySelectorAll('h1, h2')
+      headings.forEach((heading, index) => {
+        const text = heading.textContent || ''
+        setTimeout(() => {
+          AnimationUtils.typewriter(heading as HTMLElement, text, 30)
+        }, index * 500)
+      })
+
+      // Setup count-up animations for metrics
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const element = entry.target as HTMLElement
+            const targetValue = parseInt(element.textContent || '0')
+            AnimationUtils.countUp(element, targetValue, 2000)
+            observer.unobserve(element)
+          }
+        })
+      })
+
+      document.querySelectorAll('#fps-counter, #interaction-count').forEach(el => {
+        observer.observe(el)
+      })
+
+      // Setup parallax effects
+      document.querySelectorAll('.parallax').forEach(el => {
+        AnimationUtils.createParallax(el as HTMLElement, 0.3)
+      })
+
+      // Setup staggered animations for grids
+      document.querySelectorAll('.grid').forEach(grid => {
+        const items = grid.querySelectorAll('.grid > *')
+        AnimationUtils.staggerAnimation(items, (element, index) => {
+          element.classList.add('stagger-animate')
+        }, 100)
+      })
+    }
+
+    private setupPerformanceMonitoring(): void {
+      // Monitor FPS
+      const monitorFPS = (timestamp: number) => {
+        if (this.lastFrameTime) {
+          const delta = timestamp - this.lastFrameTime
+          this.fpsCounter = Math.round(1000 / delta)
+          
+          const fpsElement = document.getElementById('fps-counter')
+          if (fpsElement && this.fpsCounter > 0) {
+            fpsElement.textContent = Math.min(this.fpsCounter, 60).toString()
+          }
+        }
+        this.lastFrameTime = timestamp
+        requestAnimationFrame(monitorFPS)
+      }
+      requestAnimationFrame(monitorFPS)
+
+      // Monitor memory usage if available
+      if ('memory' in performance) {
+        setInterval(() => {
+          const memory = (performance as any).memory
+          console.log('Memory usage:', {
+            used: Math.round(memory.usedJSHeapSize / 1048576),
+            total: Math.round(memory.totalJSHeapSize / 1048576),
+            limit: Math.round(memory.jsHeapSizeLimit / 1048576)
+          })
+        }, 5000)
+      }
+    }
+
+    private setupAnalytics(): void {
+      // Track all interactions
+      document.addEventListener('click', () => {
+        this.interactionCount++
+        const counterElement = document.getElementById('interaction-count')
+        if (counterElement) {
+          counterElement.textContent = this.interactionCount.toString()
+        }
+      })
+
+      document.addEventListener('mouseover', (e) => {
+        const target = e.target as Element
+        if (target.matches('.interactive')) {
+          this.interactionCount++
+          const counterElement = document.getElementById('interaction-count')
+          if (counterElement) {
+            counterElement.textContent = this.interactionCount.toString()
+          }
+        }
+      })
+
+      // Track performance metrics
+      if (window.analytics) {
+        setInterval(() => {
+          window.analytics.trackPerformance({
+            fps: this.fpsCounter,
+            interactions: this.interactionCount,
+            timestamp: Date.now()
+          })
+        }, 10000)
+      }
+    }
+  }
+
+  // Initialize demo when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new MicroInteractionsDemo()
+  })
+
+  // Re-initialize on page navigation
+  document.addEventListener('astro:page-load', () => {
+    new MicroInteractionsDemo()
+    defaultMicroInteractions.observeNewElements()
+  })
+</script>

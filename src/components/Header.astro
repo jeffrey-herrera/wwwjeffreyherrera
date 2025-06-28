@@ -71,6 +71,12 @@ const currentPath = Astro.url.pathname;
             <span>SEO</span>
           </a>
         </li>
+        <li class="relative">
+          <a href="/micro-interactions-demo" class="hover:text-orange-500 transition-colors flex items-center text-xs">
+            {currentPath === '/micro-interactions-demo' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+            <span>UX</span>
+          </a>
+        </li>
       </ul>
     </nav>
     <div class="col-span-2 counter">
