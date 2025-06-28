@@ -6,7 +6,7 @@ export default defineType({
   name: 'about',
   title: 'About Page',
   type: 'document',
-  icon: () => React.createElement(User, { size: 18, color: '#FF6900', weight: 'duotone' }),
+  icon: () => React.createElement(User, { size: 18, color: '#f97316', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'title',
@@ -19,40 +19,24 @@ export default defineType({
       title: 'Bio',
       type: 'array',
       of: [
+        { type: 'block' },
         {
-          type: 'block',
-          styles: [
-            { title: 'Normal', value: 'normal' },
-            { title: 'H2', value: 'h2' },
-            { title: 'H3', value: 'h3' },
-            { title: 'Quote', value: 'blockquote' }
+          type: 'object',
+          name: 'spacer',
+          title: 'Spacer',
+          fields: [
+            {
+              name: 'note',
+              type: 'string',
+              title: 'Spacer',
+              hidden: true,
+              initialValue: 'spacer',
+            }
           ],
-          marks: {
-            decorators: [
-              { title: 'Strong', value: 'strong' },
-              { title: 'Emphasis', value: 'em' },
-              { title: 'Code', value: 'code' }
-            ],
-            annotations: [
-              {
-                name: 'link',
-                type: 'object',
-                title: 'Link',
-                fields: [
-                  {
-                    name: 'href',
-                    type: 'url',
-                    title: 'URL'
-                  },
-                  {
-                    name: 'blank',
-                    type: 'boolean',
-                    title: 'Open in new tab',
-                    initialValue: true
-                  }
-                ]
-              }
-            ]
+          preview: {
+            prepare() {
+              return { title: 'Spacer (1 line)' }
+            }
           }
         }
       ],

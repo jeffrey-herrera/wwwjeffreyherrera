@@ -6,7 +6,7 @@ export default defineType({
   name: 'playlist',
   title: 'Playlist',
   type: 'document',
-  icon: () => React.createElement(MusicNotes, { size: 18, color: '#FF6900', weight: 'duotone' }),
+  icon: () => React.createElement(MusicNotes, { size: 18, color: '#f97316', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'name',

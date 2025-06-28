@@ -23,7 +23,7 @@ import {
 const props = {
   '--my-white': '#fff',
   '--my-black': '#1a1a1a',
-  '--my-orange': '#FF6900',
+  '--my-orange': '#f97316',
   '--my-light-gray': '#f8f9fa',
   '--my-dark-gray': '#2d3748',
 }

@@ -6,7 +6,7 @@ export default defineType({
   name: 'project',
   title: 'Project',
   type: 'document',
-  icon: () => React.createElement(Rocket, { size: 18, color: '#FF6900', weight: 'duotone' }),
+  icon: () => React.createElement(Rocket, { size: 18, color: '#f97316', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'title',

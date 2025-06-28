@@ -6,7 +6,7 @@ export default defineType({
   name: 'playground',
   title: 'Playground',
   type: 'document',
-  icon: () => React.createElement(Palette, { size: 18, color: '#FF6900', weight: 'duotone' }),
+  icon: () => React.createElement(Palette, { size: 18, color: '#f97316', weight: 'duotone' }),
   fields: [
     defineField({
       name: 'title',

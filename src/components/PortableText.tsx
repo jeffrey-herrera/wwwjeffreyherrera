@@ -8,13 +8,24 @@ interface PortableTextComponentProps {
 
 const components = {
   block: {
-    normal: ({ children }: any) => <p className="text-lg leading-relaxed text-stone-700 mb-4">{children}</p>,
+    normal: ({ children }: any) => <p className="leading-relaxed text-stone-700 mb-4">{children}</p>,
     h2: ({ children }: any) => <h2 className="text-2xl font-bold text-stone-900 mb-4 mt-8">{children}</h2>,
     h3: ({ children }: any) => <h3 className="text-xl font-semibold text-stone-900 mb-3 mt-6">{children}</h3>,
     blockquote: ({ children }: any) => (
       <blockquote className="border-l-4 border-orange-500 pl-6 my-6 italic text-stone-700">
         {children}
       </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }: any) => (
+      <ul className="list-disc pl-4 space-y-2 mb-4 marker:text-orange-500">
+        {children?.map((child: any, index: number) => (
+          <li key={index}>
+            {child}
+          </li>
+        ))}
+      </ul>
     ),
   },
   marks: {
@@ -34,6 +45,11 @@ const components = {
       >
         {children}
       </a>
+    ),
+  },
+  types: {
+    spacer: () => (
+      <div style={{ height: '1em' }} aria-hidden="true" />
     ),
   },
 };

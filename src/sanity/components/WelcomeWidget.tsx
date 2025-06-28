@@ -73,7 +73,7 @@ export function WelcomeWidget() {
   }, [client])
 
   const baseFont = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-  const primaryOrange = '#FF6900'
+  const primaryOrange = '#f97316'
   const lightGray = '#F8F9FA'
   const darkGray = '#2D3748'
   const mediumGray = '#718096'
