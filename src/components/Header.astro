@@ -59,6 +59,12 @@ const currentPath = Astro.url.pathname;
             <span>Images</span>
           </a>
         </li>
+        <li class="relative">
+          <a href="/content-management" class="hover:text-orange-500 transition-colors flex items-center text-xs">
+            {currentPath === '/content-management' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+            <span>CMS</span>
+          </a>
+        </li>
       </ul>
     </nav>
     <div class="col-span-2 counter">
