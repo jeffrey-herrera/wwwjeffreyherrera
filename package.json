@@ -33,7 +33,6 @@
     "typescript": "^5.8.3"
   },
   "devDependencies": {
-    "@tailwindcss/aspect-ratio": "^0.4.2",
     "sanity": "^3.95.0",
     "terser": "^5.43.1"
   }

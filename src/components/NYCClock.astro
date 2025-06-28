@@ -1,0 +1,34 @@
+---
+// NYCClock - Pure Astro component with vanilla JS
+---
+
+<span class="tabular-nums" id="nyc-clock">12:00:00 AM</span>
+
+<script>
+  function updateNYCTime() {
+    const now = new Date();
+    const nycTime = now.toLocaleTimeString('en-US', {
+      timeZone: 'America/New_York',
+      hour12: true,
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    
+    const clockElement = document.getElementById('nyc-clock');
+    if (clockElement) {
+      clockElement.textContent = nycTime;
+    }
+  }
+
+  // Update immediately
+  updateNYCTime();
+
+  // Update every second
+  const interval = setInterval(updateNYCTime, 1000);
+
+  // Cleanup on page navigation (Astro handles this automatically)
+  document.addEventListener('astro:before-preparation', () => {
+    clearInterval(interval);
+  });
+</script>

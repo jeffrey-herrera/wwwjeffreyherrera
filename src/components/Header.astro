@@ -1,11 +1,9 @@
 ---
-import { getProjectsCount, getPlaygroundCount, getPlaylistsCount, getAbout } from '../sanity/queries';
-import NYCClock from './NYCClock.tsx';
+import { getAllCounts, getAbout } from '../sanity/queries';
+import NYCClock from './NYCClock.astro';
 
-const [projectsCount, playgroundCount, playlistsCount, about] = await Promise.all([
-  getProjectsCount(),
-  getPlaygroundCount(), 
-  getPlaylistsCount(),
+const [counts, about] = await Promise.all([
+  getAllCounts(),
   getAbout()
 ]);
 
@@ -22,7 +20,7 @@ const currentPath = Astro.url.pathname;
         <li class="relative">
           <a href="/" class="hover:text-orange-500 transition-colors flex items-center">
             {currentPath === '/' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
-            <span>Work<sup class="text-xs ml-1">{projectsCount}</sup></span>
+            <span>Work<sup class="text-xs ml-1">{counts.projects}</sup></span>
           </a>
         </li>
         <li class="relative">
@@ -34,19 +32,19 @@ const currentPath = Astro.url.pathname;
         <li class="relative">
           <a href="/playground" class="hover:text-orange-500 transition-colors flex items-center">
             {currentPath === '/playground' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
-            <span>Playground<sup class="text-xs ml-1">{playgroundCount}</sup></span>
+            <span>Playground<sup class="text-xs ml-1">{counts.playground}</sup></span>
           </a>
         </li>
         <li class="relative">
           <a href="/playlists" class="hover:text-orange-500 transition-colors flex items-center">
             {currentPath === '/playlists' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
-            <span>Playlists<sup class="text-xs ml-1">{playlistsCount}</sup></span>
+            <span>Playlists<sup class="text-xs ml-1">{counts.playlists}</sup></span>
           </a>
         </li>
       </ul>
     </nav>
     <div class="col-span-2 counter">
-      <p class="text-stone-400">NYC \ <NYCClock client:load /></p>
+      <p class="text-stone-400">NYC \ <NYCClock /></p>
     </div>
     <div class="col-span-2 social">
       <ul class="flex gap-3 justify-end">

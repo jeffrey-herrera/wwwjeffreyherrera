@@ -1,6 +1,6 @@
 ---
 import type { Playlist } from '../sanity/types';
-import PlaylistCover from './PlaylistCover.astro';
+import SanityImage from './SanityImage.astro';
 import { urlFor } from '../sanity/image';
 
 interface Props {
@@ -10,11 +10,11 @@ interface Props {
 const { playlist } = Astro.props;
 ---
 
-<a href={playlist.spotifyUrl} target="_blank" rel="noopener noreferrer" class="group block relative overflow-hidden rounded-lg bg-black text-white transform-gpu" style="transform-style: preserve-3d; transform: perspective(1000px); transition: all 0.2s ease-out;">
-  <div class="absolute inset-0 w-full h-full transition-all duration-500 ease-in-out transform-gpu group-hover:scale-110" style={`background-image: url(${urlFor(playlist.coverArt).width(100).blur(100).url()}); background-size: cover;`}></div>
-  <div class="relative z-10 flex flex-col h-full" style="transform: translateZ(20px);">
-    <div class="aspect-w-1 aspect-h-1">
-      <PlaylistCover source={playlist.coverArt} alt={playlist.name} class="w-full h-full object-cover" />
+<a href={playlist.spotifyUrl} target="_blank" rel="noopener noreferrer" class="playlist-card group block relative overflow-hidden rounded-lg bg-black text-white" style={`--bg-url: url(${urlFor(playlist.coverArt).width(100).blur(100).url()})`}>
+  <div class="absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-110 bg-cover" style="background-image: var(--bg-url);"></div>
+  <div class="relative z-10 flex flex-col h-full">
+    <div class="aspect-square">
+      <SanityImage source={playlist.coverArt} alt={playlist.name} variant="thumbnail" class="w-full h-full object-cover" />
     </div>
     <div class="p-4 flex-grow backdrop-blur-xl bg-black/30">
       <h3 class="font-semibold text-lg truncate">{playlist.name}</h3>
@@ -26,35 +26,78 @@ const { playlist } = Astro.props;
       </div>
     </div>
   </div>
-  <div class="absolute inset-0 w-full h-full bg-gradient-to-t from-black/50 to-transparent transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100"></div>
-  <div class="absolute inset-0 w-full h-full transition-all duration-300 ease-in-out transform-gpu z-20" style="background: radial-gradient(farthest-corner ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.4), transparent 70%); pointer-events: none; mix-blend-mode: hard-light; opacity: 0; transition: all 0.4s ease-out;" id="spotlight"></div>
+  <div class="absolute inset-0 w-full h-full bg-gradient-to-t from-black/50 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100"></div>
+  <div class="spotlight absolute inset-0 w-full h-full transition-opacity duration-400 z-20 pointer-events-none mix-blend-mode-hard-light opacity-0 group-hover:opacity-100"></div>
 </a>
 
+<style>
+.playlist-card {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.playlist-card:hover {
+  transform: scale3d(1.05, 1.05, 1.05);
+  box-shadow: 0px 10px 30px -5px rgba(0,0,0,0.3), 0px 20px 50px -10px rgba(0,0,0,0.5);
+}
+
+.spotlight {
+  background: radial-gradient(
+    farthest-corner ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+    rgba(255, 255, 255, 0.3), 
+    transparent 70%
+  );
+}
+
+@media (hover: hover) {
+  .playlist-card:hover {
+    transform: perspective(1000px) 
+               rotateX(var(--rotate-x, 0deg)) 
+               rotateY(var(--rotate-y, 0deg)) 
+               scale3d(1.05, 1.05, 1.05);
+  }
+}
+</style>
+
 <script>
+  // Optimized 3D card effect with throttling
+  let animationId: number;
+  
   document.addEventListener('DOMContentLoaded', () => {
-    const cards = document.querySelectorAll('.group') as NodeListOf<HTMLElement>;
+    const cards = document.querySelectorAll('.playlist-card') as NodeListOf<HTMLElement>;
+    
     cards.forEach(card => {
-      const spotlight = card.querySelector('#spotlight') as HTMLElement;
       card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const rotateY = (x / rect.width - 0.5) * 30;
-        const rotateX = (y / rect.height - 0.5) * -30;
-        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.1, 1.1, 1.1)`;
-        card.style.boxShadow = `0px 10px 30px -5px rgba(0,0,0,0.3), 0px 20px 50px -10px rgba(0,0,0,0.5)`;
-        card.style.setProperty('--mouse-x', `${100 - (x / rect.width) * 100}%`);
-        card.style.setProperty('--mouse-y', `${100 - (y / rect.height) * 100}%`);
-        if (spotlight) {
-          spotlight.style.opacity = '1';
+        if (animationId) {
+          cancelAnimationFrame(animationId);
         }
+        
+        animationId = requestAnimationFrame(() => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const rotateY = (x / rect.width - 0.5) * 20;
+          const rotateX = (y / rect.height - 0.5) * -20;
+          const mouseX = (x / rect.width) * 100;
+          const mouseY = (y / rect.height) * 100;
+          
+          card.style.setProperty('--rotate-x', `${rotateX}deg`);
+          card.style.setProperty('--rotate-y', `${rotateY}deg`);
+          card.style.setProperty('--mouse-x', `${mouseX}%`);
+          card.style.setProperty('--mouse-y', `${mouseY}%`);
+        });
       });
+      
       card.addEventListener('mouseleave', () => {
-        card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-        card.style.boxShadow = 'none';
-        if (spotlight) {
-          spotlight.style.opacity = '0';
+        if (animationId) {
+          cancelAnimationFrame(animationId);
         }
+        card.style.removeProperty('--rotate-x');
+        card.style.removeProperty('--rotate-y');
+        card.style.removeProperty('--mouse-x');
+        card.style.removeProperty('--mouse-y');
       });
     });
   });

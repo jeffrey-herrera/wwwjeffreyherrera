@@ -1,6 +1,26 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonical?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = 'Jeffrey Herrera - Design Director',
+  description = 'Design Director crafting digital experiences through innovative design, development, and creative exploration.',
+  image = '/og-image.jpg',
+  canonical,
+  noindex = false
+} = Astro.props;
+
+const pageTitle = title === 'Jeffrey Herrera - Design Director' ? title : `${title} | Jeffrey Herrera`;
+const currentUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
 ---
 
 <!DOCTYPE html>
@@ -8,12 +28,57 @@ import Header from '../components/Header.astro';
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jeffrey Herrera</title>
+  
+  <!-- Primary Meta Tags -->
+  <title>{pageTitle}</title>
+  <meta name="description" content={description}>
+  <meta name="author" content="Jeffrey Herrera">
+  <link rel="canonical" href={currentUrl}>
+  
+  {noindex && <meta name="robots" content="noindex, nofollow">}
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={currentUrl}>
+  <meta property="og:title" content={pageTitle}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content={ogImage}>
+  <meta property="og:site_name" content="Jeffrey Herrera">
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content={currentUrl}>
+  <meta property="twitter:title" content={pageTitle}>
+  <meta property="twitter:description" content={description}>
+  <meta property="twitter:image" content={ogImage}>
+  
+  <!-- Additional Meta Tags -->
+  <meta name="theme-color" content="#f97316">
+  <meta name="format-detection" content="telephone=no">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" href="/favicon.png">
   
   <!-- Preload critical fonts -->
   <link rel="preload" href="/fonts/degular_regular-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/degular_semibold-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/degular_mono_regular-webfont.woff2" as="font" type="font/woff2" crossorigin>
+  
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Jeffrey Herrera",
+      "jobTitle": "Design Director",
+      "url": "https://jeffreyherrera.com",
+      "sameAs": [
+        "https://instagram.com/jeffreyherrera",
+        "https://linkedin.com/in/jeffreyherrera"
+      ]
+    }
+  </script>
 </head>
 <body class="bg-stone-50 px-8">
   <Header />

@@ -94,11 +94,26 @@ export const getAllProjects = withErrorHandling(
   'getAllProjects'
 )
 
+// Generic function to get featured items of any type
+const getFeaturedItems = async <T>(
+  type: string,
+  selectFields: string,
+  cacheKey: string
+): Promise<T[]> => {
+  return query<T[]>(
+    groq`*[_type == "${type}" && featured == true] | order(coalesce(featuredOrder, _createdAt) desc) {
+      ${selectFields}
+    }`,
+    {},
+    cacheKey
+  )
+}
+
 export const getFeaturedProjects = withErrorHandling(
   async (): Promise<Project[]> => {
-    return query<Project[]>(
-      groq`*[_type == "project" && featured == true] | order(coalesce(featuredOrder, _createdAt) desc) {
-        _id,
+    return getFeaturedItems<Project>(
+      'project',
+      `_id,
         title,
         slug,
         description,
@@ -112,9 +127,7 @@ export const getFeaturedProjects = withErrorHandling(
           caption
         },
         _createdAt,
-        _updatedAt
-      }`,
-      {},
+        _updatedAt`,
       'featured-projects'
     )
   },
@@ -291,9 +304,9 @@ export const getPlaygroundItemBySlug = withErrorHandling(
 
 export const getFeaturedPlaygroundItems = withErrorHandling(
   async (): Promise<Playground[]> => {
-    return query<Playground[]>(
-      groq`*[_type == "playground" && featured == true] | order(coalesce(featuredOrder, _createdAt) desc) {
-        _id,
+    return getFeaturedItems<Playground>(
+      'playground',
+      `_id,
         title,
         slug,
         description,
@@ -305,9 +318,7 @@ export const getFeaturedPlaygroundItems = withErrorHandling(
           caption
         },
         _createdAt,
-        _updatedAt
-      }`,
-      {},
+        _updatedAt`,
       'featured-playground'
     )
   },
@@ -374,20 +385,49 @@ export const getPlaylistsCount = withErrorHandling(
   'getPlaylistsCount'
 )
 
+// Optimized single query for all counts
+export const getAllCounts = withErrorHandling(
+  async (): Promise<{
+    projects: number;
+    playground: number;
+    playlists: number;
+  }> => {
+    return query<{
+      projects: number;
+      playground: number;
+      playlists: number;
+    }>(
+      groq`{
+        "projects": count(*[_type == "project"]),
+        "playground": count(*[_type == "playground"]),
+        "playlists": count(*[_type == "playlist"])
+      }`,
+      {},
+      'all-counts'
+    )
+  },
+  'getAllCounts'
+)
+
 // Recent content
-export async function getRecentContent() {
-  return sanityClient.fetch(groq`
-    *[_type in ["project", "playlist", "playground"]] | order(_createdAt desc)[0...6] {
-      _id,
-      _type,
-      _createdAt,
-      title,
-      name,
-      slug,
-      featured
-    }
-  `)
-}
+export const getRecentContent = withErrorHandling(
+  async () => {
+    return query(
+      groq`*[_type in ["project", "playlist", "playground"]] | order(_createdAt desc)[0...6] {
+        _id,
+        _type,
+        _createdAt,
+        title,
+        name,
+        slug,
+        featured
+      }`,
+      {},
+      'recent-content'
+    )
+  },
+  'getRecentContent'
+)
 
 // Utility function to clear cache (useful for development)
 export function clearCache(): void {
