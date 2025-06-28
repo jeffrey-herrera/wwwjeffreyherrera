@@ -2,7 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import { getAllPlaylists } from '../sanity/queries';
 import type { Playlist } from '../sanity/types';
-import { PlaylistCover } from '../components/SanityImage';
+import PlaylistCover from '../components/PlaylistCover.astro';
+import InteractivePlaylistCard from '../components/InteractivePlaylistCard.tsx';
 
 const playlists = await getAllPlaylists();
 
@@ -17,7 +18,7 @@ const playlistsByYear = playlists.reduce((acc, playlist) => {
 ---
 
 <Layout>
-  <div class="max-w-6xl mx-auto p-6">
+  <div class="py-6">
     <header class="mb-12">
       <h1 class="text-4xl font-bold mb-4">Playlists</h1>
       <p class="text-xl text-gray-600">Monthly music curation spanning different moods and moments</p>
@@ -28,45 +29,34 @@ const playlistsByYear = playlists.reduce((acc, playlist) => {
       .map(([year, yearPlaylists]) => (
         <section class="mb-12">
           <h2 class="text-3xl font-bold mb-6">{year}</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
             {yearPlaylists.map((playlist: Playlist) => (
-              <div class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+              <InteractivePlaylistCard playlist={playlist} client:load>
                 {playlist.coverArt && (
-                  <div class="aspect-square bg-gray-200">
+                  <div class="w-full aspect-square bg-gray-200">
                     <PlaylistCover 
                       source={playlist.coverArt}
                       alt={playlist.coverArt.alt || playlist.name}
-                      variant="card"
-                      className="w-full h-full object-cover"
-                      client:load
+                      class="w-full h-full object-cover"
                     />
                   </div>
                 )}
                 
                 <div class="p-4">
-                  <h3 class="font-bold text-lg mb-2">{playlist.name}</h3>
+                  <h3 class="font-bold text-lg mb-2 text-stone-200">{playlist.name}</h3>
                   
                   {playlist.featuredTrack && (
-                    <p class="text-sm text-gray-600 mb-3">🎵 {playlist.featuredTrack}</p>
+                    <p class="text-sm text-stone-600">Featured:</p>
+                    <p class="text-sm text-stone-500 mb-3">{playlist.featuredTrack}</p>
                   )}
                   
-                  <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
-                    <span>{playlist.month} {playlist.year}</span>
-                    {playlist.featured && (
+                  {playlist.featured && (
+                    <div class="flex justify-between items-center text-sm text-gray-500">
                       <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">Featured</span>
-                    )}
-                  </div>
-                  
-                  <a 
-                    href={playlist.spotifyUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    class="w-full bg-green-600 text-white text-center py-2 px-4 rounded hover:bg-green-700 transition-colors inline-block"
-                  >
-                    Listen on Spotify
-                  </a>
+                    </div>
+                  )}
                 </div>
-              </div>
+              </InteractivePlaylistCard>
             ))}
           </div>
         </section>

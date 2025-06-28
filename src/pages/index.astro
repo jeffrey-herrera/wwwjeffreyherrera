@@ -1,21 +1,43 @@
 ---
+export const prerender = true;
+
 import Layout from '../layouts/Layout.astro';
 import { getFeaturedProjects, getFeaturedPlaylists } from '../sanity/queries';
 import type { Project, Playlist } from '../sanity/types';
-import { PlaylistCover } from '../components/SanityImage';
+import PlaylistCover from '../components/PlaylistCover.astro';
+import Link from '../components/Link.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import Badge from '../components/Badge.astro';
+import Button from '../components/Button.astro';
 
 const featuredProjects = await getFeaturedProjects();
 const featuredPlaylists = await getFeaturedPlaylists();
 ---
 
 <Layout>
-  <div class="max-w-4xl mx-auto p-6">
+  <div class="py-8">
 
     <!-- Hero Section -->
-    <section class="mb-12">
+    <section class="mb-16">
       <h1 class="text-5xl font-semibold mb-4">Jeffrey Herrera</h1>
-      <p class="text-xl text-gray-600">Designer, Developer & Music Curator</p>
+      <p class="text-xl text-gray-600 mb-8">Designer, Developer & Music Curator</p>
+      
+      <!-- Navigation Links -->
+      <div class="flex flex-wrap gap-6 text-lg">
+        <Link href="/about" variant="slide">About</Link>
+        <ArrowLink href="/playground">Work</ArrowLink>
+        <Link href="/playlists" variant="sweep">Music</Link>
+        <Link href="mailto:hello@jeffreyherrera.com" external variant="sweep">Contact</Link>
+      </div>
+      
+      <!-- Design System Link -->
+      <div class="mt-8">
+        <Link href="/system" variant="sweep" class="text-sm">→ Design System</Link>
+      </div>
+
     </section>
+
+
 
     <!-- Featured Projects -->
     <section class="mb-12">
@@ -27,22 +49,27 @@ const featuredPlaylists = await getFeaturedPlaylists();
             <p class="text-gray-600 mb-3">{project.description}</p>
             <div class="flex flex-wrap gap-2 mb-3">
               {project.tags.map(tag => (
-                <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">{tag}</span>
+                <Badge variant="neutral" size="small">{tag}</Badge>
               ))}
             </div>
             <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500">{project.year}</span>
-              <a href={`/playground/${project.slug.current}`} class="text-blue-600 hover:underline">
-                View Project →
-              </a>
+              <div class="flex items-center gap-2">
+                <Badge variant="info" size="small">{project.year}</Badge>
+                {project.featured && (
+                  <Badge variant="primary" size="small">Featured</Badge>
+                )}
+              </div>
+              <ArrowLink href={`/playground/${project.slug.current}`}>
+                View Project
+              </ArrowLink>
             </div>
           </div>
         ))}
       </div>
-      <div class="text-center mt-8">
-        <a href="/playground" class="inline-block bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition-colors">
+      <div>
+        <Button href="/playground" variant="primary" size="large">
           View All Projects
-        </a>
+        </Button>
       </div>
     </section>
 
@@ -57,9 +84,7 @@ const featuredPlaylists = await getFeaturedPlaylists();
                 <PlaylistCover 
                   source={playlist.coverArt}
                   alt={playlist.coverArt.alt || playlist.name}
-                  variant="thumbnail"
-                  className="w-full h-full object-cover"
-                  client:load
+                  class="w-full h-full object-cover"
                 />
               </div>
             )}
@@ -67,19 +92,24 @@ const featuredPlaylists = await getFeaturedPlaylists();
               <h3 class="font-semibold mb-2">{playlist.name}</h3>
               <p class="text-sm text-gray-600 mb-3">{playlist.featuredTrack}</p>
               <div class="flex justify-between items-center">
-                <span class="text-xs text-gray-500">{playlist.month} {playlist.year}</span>
-                <a href={playlist.spotifyUrl} target="_blank" class="text-green-600 hover:underline text-sm">
-                  Spotify →
-                </a>
+                <div class="flex items-center gap-2">
+                  <Badge variant="neutral" size="small">{playlist.month} {playlist.year}</Badge>
+                  {playlist.featured && (
+                    <Badge variant="success" size="small">Featured</Badge>
+                  )}
+                </div>
+                <Link href={playlist.spotifyUrl} external variant="sweep" class="text-sm">
+                  Listen
+                </Link>
               </div>
             </div>
           </div>
         ))}
       </div>
-      <div class="text-center mt-8">
-        <a href="/playlists" class="inline-block bg-black text-white px-6 py-3 rounded hover:bg-gray-800 transition-colors">
+      <div>
+        <Button href="/playlists" variant="secondary" size="large">
           View All Playlists
-        </a>
+        </Button>
       </div>
     </section>
   </div>

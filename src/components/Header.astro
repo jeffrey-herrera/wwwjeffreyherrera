@@ -1,0 +1,65 @@
+---
+import { getProjectsCount, getPlaygroundCount, getPlaylistsCount, getAbout } from '../sanity/queries';
+import NYCClock from './NYCClock.tsx';
+
+const [projectsCount, playgroundCount, playlistsCount, about] = await Promise.all([
+  getProjectsCount(),
+  getPlaygroundCount(), 
+  getPlaylistsCount(),
+  getAbout()
+]);
+
+// Get current page path to determine active state
+const currentPath = Astro.url.pathname;
+---
+
+<div class="w-full">
+  <div class="w-full h-4 bg-orange-500 rounded-b-lg" />
+  <div class="py-6 container-grid">
+    <h1 class="col-span-4 text-stone-400">Jeffrey Herrera \ Design Director</h1>
+    <nav class="col-span-4">
+      <ul class="flex gap-4">
+        <li class="relative">
+          <a href="/" class="hover:text-orange-500 transition-colors flex items-center">
+            {currentPath === '/' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+            <span>Work<sup class="text-xs ml-1">{projectsCount}</sup></span>
+          </a>
+        </li>
+        <li class="relative">
+          <a href="/about" class="hover:text-orange-500 transition-colors flex items-center">
+            {currentPath === '/about' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+            <span>About</span>
+          </a>
+        </li>
+        <li class="relative">
+          <a href="/playground" class="hover:text-orange-500 transition-colors flex items-center">
+            {currentPath === '/playground' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+            <span>Playground<sup class="text-xs ml-1">{playgroundCount}</sup></span>
+          </a>
+        </li>
+        <li class="relative">
+          <a href="/playlists" class="hover:text-orange-500 transition-colors flex items-center">
+            {currentPath === '/playlists' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+            <span>Playlists<sup class="text-xs ml-1">{playlistsCount}</sup></span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="col-span-2 counter">
+      <p class="text-stone-400">NYC \ <NYCClock client:load /></p>
+    </div>
+    <div class="col-span-2 social">
+      <ul class="flex gap-3 justify-end">
+        {about?.contact?.instagram && (
+          <li><a href={about.contact.instagram} target="_blank" rel="noopener noreferrer" class="text-stone-400 hover:text-orange-500 transition-colors">IG</a></li>
+        )}
+        {about?.contact?.linkedin && (
+          <li><a href={about.contact.linkedin} target="_blank" rel="noopener noreferrer" class="text-stone-400 hover:text-orange-500 transition-colors">LI</a></li>
+        )}
+        {about?.contact?.email && (
+          <li><a href={`mailto:${about.contact.email}`} class="text-stone-400 hover:text-orange-500 transition-colors">EMAIL</a></li>
+        )}
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,12 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAllPlayground, getAllProjects } from '../sanity/queries';
+import { getAllPlaygroundItems, getAllProjects } from '../sanity/queries';
 import type { Project, Playground } from '../sanity/types';
-import { PlaygroundImage } from '../components/SanityImage';
+import SanityImage from '../components/SanityImage.astro';
 
 // Get both projects (portfolio) and playground content
 const projects = await getAllProjects();
-const playgroundContent = await getAllPlayground();
+const playgroundContent = await getAllPlaygroundItems();
 
 // Group playground content by type
 const playgroundByType = playgroundContent.reduce((acc, item) => {
@@ -100,12 +100,11 @@ const playgroundByType = playgroundContent.reduce((acc, item) => {
               <article class="bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
                 {item.image && (
                   <div class="aspect-square bg-gray-200">
-                    <PlaygroundImage 
+                    <SanityImage 
                       source={item.image}
                       alt={item.image.alt || item.title}
                       variant="thumbnail"
-                      className="w-full h-full object-cover"
-                      client:load
+                      class="w-full h-full object-cover"
                     />
                   </div>
                 )}

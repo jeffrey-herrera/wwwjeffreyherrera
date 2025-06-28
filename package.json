@@ -5,27 +5,33 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:analyze": "astro build --verbose",
     "preview": "astro preview",
+    "preview:build": "npm run build && npm run preview",
+    "clean": "rm -rf dist .astro node_modules/.cache",
+    "type-check": "astro check",
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/node": "^9.2.2",
     "@astrojs/react": "^4.3.0",
+    "@portabletext/react": "^3.2.1",
+    "@portabletext/types": "^2.0.13",
     "@sanity/astro": "^3.2.6",
     "@sanity/client": "^6.29.1",
     "@sanity/image-url": "^1.1.0",
     "@sanity/vision": "^3.95.0",
     "@tailwindcss/vite": "^4.1.10",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
     "astro": "^5.10.1",
     "phosphor-react": "^1.4.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-is": "^19.1.0",
-    "styled-components": "^6.1.19",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.10"
   },
   "devDependencies": {
-    "sanity": "^3.95.0"
+    "sanity": "^3.95.0",
+    "terser": "^5.43.1"
   }
 }

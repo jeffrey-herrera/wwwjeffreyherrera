@@ -1,0 +1,63 @@
+---
+import imageUrlBuilder from '@sanity/image-url'
+import { sanityClient } from '../sanity/client'
+import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
+
+interface Props {
+  source: SanityImageSource
+  alt: string
+  variant?: 'thumbnail' | 'medium' | 'large' | 'hero'
+  class?: string
+  priority?: boolean
+  quality?: number
+}
+
+const {
+  source,
+  alt,
+  variant = 'medium',
+  class: className = '',
+  priority = false,
+  quality = 85
+} = Astro.props
+
+const builder = imageUrlBuilder(sanityClient)
+
+const variantSizes = {
+  thumbnail: { width: 400, height: 400 },
+  medium: { width: 800, height: 600 },
+  large: { width: 1200, height: 900 },
+  hero: { width: 1600, height: 900 },
+}
+
+const { width, height } = variantSizes[variant]
+
+// Generate image URL if source exists
+const imageUrl = source ? builder
+  .image(source)
+  .width(width)
+  .height(height)
+  .quality(quality)
+  .format('webp')
+  .url() : null
+---
+
+{!source || !imageUrl ? (
+  <div 
+    class={`bg-gray-200 flex items-center justify-center text-gray-500 ${className}`}
+    style={`width: ${width}px; height: ${height}px;`}
+  >
+    No image
+  </div>
+) : (
+  <img
+    src={imageUrl}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={priority ? 'eager' : 'lazy'}
+    decoding="async"
+    class={className}
+    style={`width: 100%; height: auto; max-width: ${width}px;`}
+  />
+)} 

@@ -1,0 +1,96 @@
+---
+interface Props {
+  href: string;
+  external?: boolean;
+  variant?: 'sweep' | 'slide';
+  speed?: 'slow' | 'normal' | 'fast';
+  class?: string;
+}
+
+const { 
+  href, 
+  external = false,
+  variant = 'sweep',
+  speed = 'normal',
+  class: className = ''
+} = Astro.props;
+
+const speedValues = {
+  slow: '500ms',
+  normal: '300ms', 
+  fast: '200ms'
+};
+
+const linkProps = external 
+  ? { target: '_blank', rel: 'noopener noreferrer' }
+  : {};
+---
+
+<a
+  href={href}
+  class={`
+    link-component relative inline-block
+    ${variant}
+    ${className}
+  `}
+  style={`--speed: ${speedValues[speed]}`}
+  {...linkProps}
+>
+  <slot />
+</a>
+
+<style is:global>
+  /* 1. Underline Sweep - sweeps from left to right */
+  .link-component.sweep {
+    color: #f97316; /* orange-500 */
+    text-decoration: none;
+    position: relative;
+    transition: color var(--speed) ease-out;
+  }
+  
+  .link-component.sweep::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width var(--speed) ease-out;
+  }
+  
+  .link-component.sweep:hover::after {
+    width: 100%;
+  }
+
+  /* 2. Background Slide - background slides in from left */
+  .link-component.slide {
+    color: #f97316; /* orange-500 */
+    position: relative;
+    z-index: 1;
+    padding: 2px 4px;
+    margin: -2px -4px;
+    transition: color var(--speed) ease-out;
+  }
+  
+  .link-component.slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background-color: #f97316; /* orange-500 */
+    transition: width var(--speed) ease-out;
+    z-index: -1;
+    border-radius: 2px;
+  }
+  
+  .link-component.slide:hover::before {
+    width: 100%;
+  }
+  
+  .link-component.slide:hover {
+    color: white;
+  }
+</style> 

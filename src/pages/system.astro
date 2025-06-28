@@ -1,0 +1,307 @@
+---
+export const prerender = true;
+
+import Layout from '../layouts/Layout.astro';
+import Link from '../components/Link.astro';
+import ArrowLink from '../components/ArrowLink.astro';
+import Badge from '../components/Badge.astro';
+import Button from '../components/Button.astro';
+import Card from '../components/Card.astro';
+---
+
+<Layout>
+  <div class="mx-auto min-h-screen">
+    <!-- Header -->
+    <section class="mb-12">
+      <h1 class="text-4xl font-semibold mb-4">Design System</h1>
+      <p class="text-xl text-gray-600 mb-6">Component showcase and documentation</p>
+      <ArrowLink href="/">Back to Home</ArrowLink>
+    </section>
+
+    <!-- Link Components -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold mb-8">Link Components</h2>
+      <p class="text-gray-600 mb-8">For inline text links, use <code>Link</code>. For navigation with directional cues, use <code>ArrowLink</code>.</p>
+      
+      <!-- Link Examples -->
+      <div class="mb-12 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-semibold mb-4">Link Component Examples</h3>
+        <p class="text-sm text-stone-600 mb-4">Two clean hover effects perfect for inline usage</p>
+                  <div class="space-y-4">
+            <div>
+              <span class="text-sm font-medium text-stone-600">Underline Sweep:</span>
+              <Link href="/about" variant="sweep" class="ml-2">About Page</Link>
+            </div>
+            <div>
+              <span class="text-sm font-medium text-stone-600">Background Slide:</span>
+              <Link href="/playlists" variant="slide" class="ml-2">Music Collection</Link>
+            </div>
+          </div>
+      </div>
+
+      <!-- Inline Usage Demo -->
+      <div class="mb-12 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-semibold mb-4">Inline Usage Examples</h3>
+        <div class="space-y-4">
+          <p class="text-base">
+            This is a paragraph with an inline <Link href="/about" variant="sweep">sweep link</Link> that flows naturally with the text.
+          </p>
+          <p class="text-base">
+            You can also use <Link href="/playground" variant="slide">slide variants</Link> or mix different styles within sentences.
+          </p>
+          <p class="text-base">
+            Even <ArrowLink href="/work">arrow links</ArrowLink> work inline seamlessly.
+          </p>
+          
+          <!-- Lorem Ipsum with Multiple Links -->
+                      <div class="mt-6 p-4 bg-white rounded border border-stone-200">
+              <h4 class="text-sm font-medium text-stone-600 mb-3">Lorem Ipsum with Inline Links</h4>
+            <p class="text-base leading-relaxed">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut 
+              <Link href="/about" variant="sweep">labore et dolore</Link> magna aliqua. Ut enim ad minim veniam, 
+              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in 
+              <Link href="/playground" variant="slide">reprehenderit in voluptate</Link> velit esse cillum dolore eu fugiat nulla pariatur. 
+              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est 
+              <ArrowLink href="/contact">laborum et magnam</ArrowLink> aliquam quaerat voluptatem.
+            </p>
+            <p class="text-base leading-relaxed mt-4">
+              Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem 
+              <Link href="/playlists" variant="slide">aperiam eaque ipsa</Link> quae ab illo inventore veritatis et quasi 
+              architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut 
+              <Link href="mailto:test@example.com" external variant="sweep">odit aut fugit</Link>, sed quia 
+              consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Speed Variants -->
+      <div class="mb-12 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-semibold mb-4">Animation Speed Variants</h3>
+        <div class="space-y-4">
+          <div>
+            <span class="text-sm font-medium text-stone-600">Slow (500ms):</span>
+            <Link href="#" variant="sweep" speed="slow" class="ml-2">Slow Animation</Link>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-stone-600">Normal (300ms):</span>
+            <Link href="#" variant="slide" speed="normal" class="ml-2">Normal Animation</Link>
+          </div>
+          <div>
+            <span class="text-sm font-medium text-stone-600">Fast (200ms):</span>
+            <Link href="#" variant="sweep" speed="fast" class="ml-2">Fast Animation</Link>
+          </div>
+        </div>
+      </div>
+
+      <!-- Note about Button Component -->
+      <div class="p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-semibold mb-4">For Button Styling</h3>
+        <p class="text-sm text-stone-600 mb-4">Use the dedicated Button component instead - it's more flexible and follows your design system</p>
+        <Button href="/contact" variant="primary">Contact Me</Button>
+      </div>
+    </section>
+
+    <!-- Badge Components -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold mb-8">Badge Components</h2>
+      
+      <!-- Badge Variants -->
+      <div class="mb-8 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-4">Badge Variants</h3>
+        <div class="flex flex-wrap gap-3">
+          <Badge variant="primary">Primary</Badge>
+          <Badge variant="secondary">Secondary</Badge>
+          <Badge variant="success">Published</Badge>
+          <Badge variant="warning">Draft</Badge>
+          <Badge variant="info">2024</Badge>
+          <Badge variant="neutral">Tag</Badge>
+        </div>
+      </div>
+
+      <!-- Badge Sizes -->
+      <div class="p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-4">Badge Sizes</h3>
+        <div class="flex flex-wrap gap-3">
+          <Badge variant="primary" size="small">Small</Badge>
+          <Badge variant="secondary" size="medium">Medium</Badge>
+          <Badge variant="info" size="large">Large</Badge>
+        </div>
+      </div>
+    </section>
+
+    <!-- Button Components -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold mb-8">Button Components</h2>
+      
+      <!-- Button Variants -->
+      <div class="mb-8 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-4">Button Variants</h3>
+        <div class="flex flex-wrap gap-4">
+          <Button variant="primary">Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="tertiary">Tertiary</Button>
+        </div>
+      </div>
+
+      <!-- Button Sizes -->
+      <div class="mb-8 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-4">Button Sizes</h3>
+        <div class="flex flex-wrap gap-4">
+          <Button variant="primary" size="small">Small</Button>
+          <Button variant="primary" size="medium">Medium</Button>
+          <Button variant="primary" size="large">Large</Button>
+        </div>
+      </div>
+
+      <!-- Button as Links -->
+      <div class="p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-4">Buttons as Links</h3>
+        <div class="flex flex-wrap gap-4">
+          <Button href="/about" variant="primary">Internal Link</Button>
+          <Button href="https://github.com" external variant="secondary">External Link</Button>
+          <Button type="submit" variant="tertiary">Form Submit</Button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Card Components -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold mb-8">Card Components</h2>
+      <p class="text-stone-600 mb-8">Cards with similar styling to buttons, supporting optional full-bleed images and both clickable and non-clickable variants.</p>
+      
+      <!-- Card Variants -->
+      <div class="mb-12 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-6">Card Variants</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card variant="primary">
+            <h4 class="text-xl font-semibold mb-2">Primary Card</h4>
+            <p class="text-sm opacity-90">Orange background with dramatic hover effects. Perfect for featured content.</p>
+          </Card>
+          
+          <Card variant="secondary">
+            <h4 class="text-xl font-semibold mb-2">Secondary Card</h4>
+            <p class="text-sm opacity-90">Dark stone background with white text. Great for secondary content.</p>
+          </Card>
+          
+          <Card variant="tertiary">
+            <h4 class="text-xl font-semibold mb-2">Tertiary Card</h4>
+            <p class="text-sm text-stone-600">Subtle stone styling with minimal hover. Ideal for supporting content.</p>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Cards with Images -->
+      <div class="mb-12 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-6">Cards with Full-Bleed Images</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card variant="primary" imageUrl="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=225&fit=crop&crop=entropy&auto=format" imageAlt="Abstract orange design">
+            <h4 class="text-lg font-semibold mb-2">Featured Project</h4>
+            <p class="text-sm opacity-90">With dramatic scaling effects on hover.</p>
+          </Card>
+          
+          <Card variant="secondary" imageUrl="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=225&fit=crop&crop=entropy&auto=format" imageAlt="Design workspace">
+            <h4 class="text-lg font-semibold mb-2">Case Study</h4>
+            <p class="text-sm opacity-90">Subtle image scaling with elegant hover.</p>
+          </Card>
+          
+          <Card variant="tertiary" imageUrl="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=400&h=225&fit=crop&crop=entropy&auto=format" imageAlt="Minimal workspace">
+            <h4 class="text-lg font-semibold mb-2">Blog Post</h4>
+            <p class="text-sm text-stone-600">Gentle effects for content cards.</p>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Clickable Cards -->
+      <div class="p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-6">Clickable Cards (Links)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card variant="primary" href="/about" imageUrl="https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=225&fit=crop&crop=entropy&auto=format" imageAlt="About page preview">
+            <h4 class="text-lg font-semibold mb-2">About Page</h4>
+            <p class="text-sm opacity-90">Learn more about my background and experience.</p>
+            <div class="mt-3 text-sm opacity-75">Click to visit →</div>
+          </Card>
+          
+          <Card variant="secondary" href="https://github.com" external imageUrl="https://images.unsplash.com/photo-1618401471353-b98d5e432371?w=400&h=225&fit=crop&crop=entropy&auto=format" imageAlt="GitHub profile">
+            <h4 class="text-lg font-semibold mb-2">GitHub Profile</h4>
+            <p class="text-sm opacity-90">Check out my open source projects and contributions.</p>
+            <div class="mt-3 text-sm opacity-75">External link →</div>
+          </Card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Typography & Colors -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-semibold mb-8">Typography & Colors</h2>
+      
+      <!-- Typography Scale -->
+      <div class="mb-8 p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-4">Typography Scale</h3>
+        <div class="space-y-2">
+          <div class="text-5xl font-semibold">Display Large (text-5xl)</div>
+          <div class="text-4xl font-semibold">Display Medium (text-4xl)</div>
+          <div class="text-3xl font-semibold">Heading Large (text-3xl)</div>
+          <div class="text-2xl font-semibold">Heading Medium (text-2xl)</div>
+          <div class="text-xl font-semibold">Heading Small (text-xl)</div>
+          <div class="text-lg">Body Large (text-lg)</div>
+          <div class="text-base">Body Medium (text-base)</div>
+          <div class="text-sm">Body Small (text-sm)</div>
+        </div>
+      </div>
+
+      <!-- Color Palette -->
+      <div class="p-6 bg-stone-100 rounded-lg">
+        <h3 class="text-lg font-medium mb-4">Color Palette</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Orange Colors (Brand) -->
+          <div>
+            <h4 class="font-medium mb-4">Orange (Brand)</h4>
+            <div class="space-y-2">
+              <div class="w-full h-10 bg-orange-50 rounded flex items-center justify-center text-orange-900 text-sm font-medium">50</div>
+              <div class="w-full h-10 bg-orange-100 rounded flex items-center justify-center text-orange-900 text-sm font-medium">100</div>
+              <div class="w-full h-10 bg-orange-200 rounded flex items-center justify-center text-orange-900 text-sm font-medium">200</div>
+              <div class="w-full h-10 bg-orange-300 rounded flex items-center justify-center text-orange-900 text-sm font-medium">300</div>
+              <div class="w-full h-10 bg-orange-400 rounded flex items-center justify-center text-white text-sm font-medium">400 (Primary)</div>
+              <div class="w-full h-10 bg-orange-500 rounded flex items-center justify-center text-white text-sm font-medium">500</div>
+              <div class="w-full h-10 bg-orange-600 rounded flex items-center justify-center text-white text-sm font-medium">600</div>
+              <div class="w-full h-10 bg-orange-700 rounded flex items-center justify-center text-white text-sm font-medium">700</div>
+              <div class="w-full h-10 bg-orange-800 rounded flex items-center justify-center text-white text-sm font-medium">800</div>
+              <div class="w-full h-10 bg-orange-900 rounded flex items-center justify-center text-white text-sm font-medium">900</div>
+              <div class="w-full h-10 bg-orange-950 rounded flex items-center justify-center text-white text-sm font-medium">950</div>
+            </div>
+          </div>
+          
+          <!-- Stone Colors (Neutral) -->
+          <div>
+            <h4 class="font-medium mb-4">Stone (Neutral)</h4>
+            <div class="space-y-2">
+              <div class="w-full h-10 bg-stone-50 rounded flex items-center justify-center text-stone-900 text-sm font-medium border border-stone-200">50</div>
+              <div class="w-full h-10 bg-stone-100 rounded flex items-center justify-center text-stone-900 text-sm font-medium">100</div>
+              <div class="w-full h-10 bg-stone-200 rounded flex items-center justify-center text-stone-900 text-sm font-medium">200</div>
+              <div class="w-full h-10 bg-stone-300 rounded flex items-center justify-center text-stone-900 text-sm font-medium">300</div>
+              <div class="w-full h-10 bg-stone-400 rounded flex items-center justify-center text-white text-sm font-medium">400</div>
+              <div class="w-full h-10 bg-stone-500 rounded flex items-center justify-center text-white text-sm font-medium">500</div>
+              <div class="w-full h-10 bg-stone-600 rounded flex items-center justify-center text-white text-sm font-medium">600</div>
+              <div class="w-full h-10 bg-stone-700 rounded flex items-center justify-center text-white text-sm font-medium">700</div>
+              <div class="w-full h-10 bg-stone-800 rounded flex items-center justify-center text-white text-sm font-medium">800</div>
+              <div class="w-full h-10 bg-stone-900 rounded flex items-center justify-center text-white text-sm font-medium">900</div>
+              <div class="w-full h-10 bg-stone-950 rounded flex items-center justify-center text-white text-sm font-medium">950</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Note about Badge Status Colors -->
+        <div class="mt-6 p-4 bg-stone-100 rounded border border-stone-300">
+          <h4 class="font-medium mb-2">Badge Status Colors</h4>
+          <p class="text-sm text-stone-600 mb-3">These semantic colors are used only for badge status indicators:</p>
+          <div class="flex flex-wrap gap-2">
+            <Badge variant="success">Success (Green)</Badge>
+            <Badge variant="warning">Warning (Amber)</Badge>
+            <Badge variant="info">Info (Blue)</Badge>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout> 

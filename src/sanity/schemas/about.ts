@@ -17,8 +17,46 @@ export default defineType({
     defineField({
       name: 'bio',
       title: 'Bio',
-      type: 'text',
-      description: 'A brief description about yourself',
+      type: 'array',
+      of: [
+        {
+          type: 'block',
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'H2', value: 'h2' },
+            { title: 'H3', value: 'h3' },
+            { title: 'Quote', value: 'blockquote' }
+          ],
+          marks: {
+            decorators: [
+              { title: 'Strong', value: 'strong' },
+              { title: 'Emphasis', value: 'em' },
+              { title: 'Code', value: 'code' }
+            ],
+            annotations: [
+              {
+                name: 'link',
+                type: 'object',
+                title: 'Link',
+                fields: [
+                  {
+                    name: 'href',
+                    type: 'url',
+                    title: 'URL'
+                  },
+                  {
+                    name: 'blank',
+                    type: 'boolean',
+                    title: 'Open in new tab',
+                    initialValue: true
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      description: 'Rich text bio with formatting options',
       validation: (Rule) => Rule.required()
     }),
     defineField({
@@ -36,48 +74,7 @@ export default defineType({
         }
       ]
     }),
-    defineField({
-      name: 'skills',
-      title: 'Skills',
-      type: 'array',
-      of: [{ type: 'string' }],
-      description: 'List of your key skills'
-    }),
-    defineField({
-      name: 'experience',
-      title: 'Experience',
-      type: 'array',
-      of: [
-        {
-          type: 'object',
-          fields: [
-            {
-              name: 'company',
-              title: 'Company',
-              type: 'string',
-              validation: (Rule) => Rule.required()
-            },
-            {
-              name: 'role',
-              title: 'Role',
-              type: 'string',
-              validation: (Rule) => Rule.required()
-            },
-            {
-              name: 'period',
-              title: 'Time Period',
-              type: 'string',
-              description: 'e.g. "2021 - Present" or "2019 - 2021"'
-            },
-            {
-              name: 'description',
-              title: 'Description',
-              type: 'text'
-            }
-          ]
-        }
-      ]
-    }),
+
     defineField({
       name: 'contact',
       title: 'Contact Information',
@@ -90,19 +87,16 @@ export default defineType({
           validation: (Rule) => Rule.required().email()
         },
         {
+          name: 'instagram',
+          title: 'Instagram URL',
+          type: 'url',
+          description: 'Full Instagram profile URL'
+        },
+        {
           name: 'linkedin',
           title: 'LinkedIn URL',
-          type: 'url'
-        },
-        {
-          name: 'twitter',
-          title: 'Twitter URL',
-          type: 'url'
-        },
-        {
-          name: 'github',
-          title: 'GitHub URL',
-          type: 'url'
+          type: 'url',
+          description: 'Full LinkedIn profile URL'
         }
       ]
     })

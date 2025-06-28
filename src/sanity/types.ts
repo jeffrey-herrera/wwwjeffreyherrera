@@ -48,24 +48,35 @@ export interface Playlist extends SanityDocument {
   featuredTrack: string
 }
 
+// Portable Text types for rich content
+export interface PortableTextBlock {
+  _type: 'block'
+  _key: string
+  style: string
+  children: Array<{
+    _type: 'span'
+    _key: string
+    text: string
+    marks?: string[]
+  }>
+  markDefs?: Array<{
+    _type: string
+    _key: string
+    href?: string
+    blank?: boolean
+  }>
+}
+
 // About page content
 export interface About extends SanityDocument {
   _type: 'about'
   title: string
-  bio: string
+  bio: PortableTextBlock[]
   profileImage: SanityImage
-  skills: string[]
-  experience: {
-    company: string
-    role: string
-    period: string
-    description: string
-  }[]
   contact: {
     email: string
+    instagram?: string
     linkedin?: string
-    twitter?: string
-    github?: string
   }
 }
 

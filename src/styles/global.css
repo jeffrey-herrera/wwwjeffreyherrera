@@ -182,38 +182,6 @@
     display: grid;
     grid-template-columns: repeat(12, 1fr);
     gap: 12px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 12px;
-  }
-  
-  /* Responsive container adjustments */
-  @media (min-width: 640px) {
-    .container-grid {
-      gap: 16px;
-      padding: 0 16px;
-    }
-  }
-  
-  @media (min-width: 768px) {
-    .container-grid {
-      gap: 20px;
-      padding: 0 20px;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    .container-grid {
-      gap: 24px;
-      padding: 0 24px;
-    }
-  }
-  
-  @media (min-width: 1280px) {
-    .container-grid {
-      padding: 0 32px;
-    }
   }
   
   /* Grid span utilities */

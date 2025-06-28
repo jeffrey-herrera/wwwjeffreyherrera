@@ -1,0 +1,51 @@
+---
+import Link from './Link.astro';
+
+interface Props {
+  href: string;
+  external?: boolean;
+  class?: string;
+}
+
+const { href, external = false, class: className = '' } = Astro.props;
+
+const linkProps = external 
+  ? { target: '_blank', rel: 'noopener noreferrer' }
+  : {};
+---
+
+<a
+  href={href}
+  class={`group inline-flex items-center gap-1 ${className}`}
+  {...linkProps}
+>
+  <span class="arrow-link-text relative">
+    <slot />
+  </span>
+  <span class="transition-transform duration-300 group-hover:-rotate-45 inline-block font-light">
+    →
+  </span>
+</a>
+
+<style is:global>
+  .arrow-link-text {
+    color: #f97316; /* orange-500 */
+    text-decoration: none;
+    position: relative;
+  }
+  
+  .arrow-link-text::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width 300ms ease-out;
+  }
+  
+  .group:hover .arrow-link-text::after {
+    width: 100%;
+  }
+</style> 
