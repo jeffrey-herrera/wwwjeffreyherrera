@@ -1,0 +1,319 @@
+---
+import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import { 
+  generateResponsiveImageSet, 
+  calculateLoadingStrategy, 
+  OPTIMIZATION_PRESETS,
+  type OptimizationPreset 
+} from '../utils/imageOptimization'
+
+interface Props {
+  source: SanityImageSource
+  alt: string
+  preset?: keyof typeof OPTIMIZATION_PRESETS | OptimizationPreset
+  sizes?: string
+  class?: string
+  priority?: boolean
+  isAboveFold?: boolean
+  isCritical?: boolean
+  onLoad?: string
+  style?: string
+}
+
+const {
+  source,
+  alt,
+  preset = 'card',
+  sizes: customSizes,
+  class: className = '',
+  priority = false,
+  isAboveFold = false,
+  isCritical = false,
+  onLoad,
+  style = ''
+} = Astro.props
+
+// Get preset configuration
+const presetConfig = typeof preset === 'string' ? OPTIMIZATION_PRESETS[preset] : preset
+
+// Generate responsive image set
+const imageSet = generateResponsiveImageSet(source, presetConfig, customSizes)
+
+// Calculate loading strategy
+const loadingStrategy = calculateLoadingStrategy(presetConfig, isAboveFold, isCritical)
+
+// Generate unique ID for tracking
+const imageId = `img-${Math.random().toString(36).substr(2, 9)}`
+
+// Inline styles for placeholder
+const placeholderStyle = `
+  background-color: #f3f4f6;
+  background-image: url('${imageSet.placeholder}');
+  background-size: cover;
+  background-position: center;
+  aspect-ratio: ${imageSet.aspectRatio};
+`
+---
+
+<div 
+  class={`optimized-image-container ${className}`}
+  data-image-id={imageId}
+  data-avif-srcset={imageSet.avifSrcSet}
+  data-webp-srcset={imageSet.webpSrcSet}
+  data-jpg-srcset={imageSet.srcSet}
+  data-sizes={imageSet.sizes}
+  style={style}
+>
+  <!-- Placeholder background -->
+  <div 
+    class="image-placeholder absolute inset-0"
+    style={placeholderStyle}
+    aria-hidden="true"
+  ></div>
+  
+  <!-- Optimized image -->
+  {loadingStrategy.preload ? (
+    <!-- Critical image with picture element -->
+    <picture class="relative z-10">
+      {imageSet.avifSrcSet && (
+        <source 
+          srcset={imageSet.avifSrcSet}
+          sizes={imageSet.sizes}
+          type="image/avif"
+        />
+      )}
+      {imageSet.webpSrcSet && (
+        <source 
+          srcset={imageSet.webpSrcSet}
+          sizes={imageSet.sizes}
+          type="image/webp"
+        />
+      )}
+      <img
+        src={imageSet.src}
+        srcset={imageSet.srcSet}
+        sizes={imageSet.sizes}
+        alt={alt}
+        loading={loadingStrategy.loading}
+        decoding={loadingStrategy.decoding}
+        fetchpriority={loadingStrategy.fetchPriority}
+        class="w-full h-full object-cover transition-opacity duration-300"
+        onload={onLoad}
+        style={`aspect-ratio: ${imageSet.aspectRatio}`}
+      />
+    </picture>
+  ) : (
+    <!-- Progressive loading image -->
+    <img
+      src={imageSet.placeholder}
+      data-src={imageSet.src}
+      data-srcset={imageSet.srcSet}
+      data-sizes={imageSet.sizes}
+      alt={alt}
+      loading={loadingStrategy.loading}
+      decoding={loadingStrategy.decoding}
+      fetchpriority={loadingStrategy.fetchPriority}
+      class="progressive-image w-full h-full object-cover transition-opacity duration-300 relative z-10"
+      onload={onLoad}
+      style={`aspect-ratio: ${imageSet.aspectRatio}`}
+    />
+  )}
+  
+  <!-- Loading indicator -->
+  <div class="image-loading-indicator absolute inset-0 flex items-center justify-center bg-stone-100/80 opacity-100 transition-opacity duration-300">
+    <div class="flex items-center gap-2 text-stone-500">
+      <div class="animate-spin w-4 h-4 border-2 border-stone-400 border-t-transparent rounded-full"></div>
+      <span class="text-xs">Loading...</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .optimized-image-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .image-placeholder {
+    filter: blur(2px);
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+  }
+
+  .image-loaded .image-placeholder {
+    opacity: 0;
+    transform: scale(1);
+  }
+
+  .image-loaded .image-loading-indicator {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .image-loaded .progressive-image,
+  .image-loaded picture img {
+    opacity: 1;
+  }
+
+  .progressive-image {
+    opacity: 0;
+  }
+
+  .image-loaded .progressive-image {
+    opacity: 1;
+  }
+
+  /* Preload critical images immediately */
+  .optimized-image-container[data-critical="true"] img {
+    opacity: 1;
+  }
+
+  /* Performance optimizations */
+  .optimized-image-container {
+    contain: layout style paint;
+    will-change: transform;
+  }
+
+  .optimized-image-container img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+
+  /* Error state */
+  .image-error {
+    background: linear-gradient(45deg, #f3f4f6 25%, #e5e7eb 25%, #e5e7eb 50%, #f3f4f6 50%, #f3f4f6 75%, #e5e7eb 75%, #e5e7eb);
+    background-size: 20px 20px;
+  }
+
+  .image-error::after {
+    content: '🖼️';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    opacity: 0.5;
+  }
+</style>
+
+<script>
+  import { progressiveLoader, trackImagePerformance } from '../utils/imageOptimization'
+
+  class OptimizedImageManager {
+    private performanceObserver: PerformanceObserver | null = null
+    private loadStartTimes = new Map<string, number>()
+
+    constructor() {
+      this.initializeImages()
+      this.setupPerformanceTracking()
+    }
+
+    private initializeImages(): void {
+      const containers = document.querySelectorAll('.optimized-image-container') as NodeListOf<HTMLElement>
+      
+      containers.forEach(container => {
+        const imageId = container.dataset.imageId!
+        this.loadStartTimes.set(imageId, performance.now())
+        
+        // Set up progressive loading for non-critical images
+        const img = container.querySelector('.progressive-image') as HTMLImageElement
+        if (img) {
+          progressiveLoader.observeImage(container)
+        } else {
+          // Critical image - mark as loaded immediately
+          setTimeout(() => {
+            container.classList.add('image-loaded')
+            this.trackImageLoad(container)
+          }, 100)
+        }
+
+        // Error handling
+        const allImages = container.querySelectorAll('img')
+        allImages.forEach(image => {
+          image.addEventListener('error', () => {
+            container.classList.add('image-error')
+            console.warn('Failed to load image:', image.src)
+          })
+
+          image.addEventListener('load', () => {
+            container.classList.add('image-loaded')
+            this.trackImageLoad(container)
+          })
+        })
+      })
+    }
+
+    private trackImageLoad(container: HTMLElement): void {
+      const imageId = container.dataset.imageId!
+      const startTime = this.loadStartTimes.get(imageId)
+      
+      if (startTime) {
+        const loadTime = performance.now() - startTime
+        const img = container.querySelector('img') as HTMLImageElement
+        
+        if (img) {
+          // Estimate image size from dimensions (approximation)
+          const estimatedSize = (img.naturalWidth * img.naturalHeight * 3) / 1024 // KB estimate
+          
+          trackImagePerformance(imageId, {
+            loadTime,
+            size: estimatedSize,
+            format: this.detectImageFormat(img.src),
+            fromCache: loadTime < 50 // Assume cached if very fast
+          })
+        }
+        
+        this.loadStartTimes.delete(imageId)
+      }
+    }
+
+    private detectImageFormat(src: string): string {
+      if (src.includes('fm=avif') || src.includes('.avif')) return 'avif'
+      if (src.includes('fm=webp') || src.includes('.webp')) return 'webp'
+      if (src.includes('fm=jpg') || src.includes('.jpg')) return 'jpg'
+      if (src.includes('fm=png') || src.includes('.png')) return 'png'
+      return 'unknown'
+    }
+
+    private setupPerformanceTracking(): void {
+      if (!('PerformanceObserver' in window)) return
+
+      try {
+        this.performanceObserver = new PerformanceObserver((list) => {
+          list.getEntries().forEach(entry => {
+            if (entry.entryType === 'navigation') {
+              // Track overall page load performance
+              const navEntry = entry as PerformanceNavigationTiming
+              console.log('Page load performance:', {
+                domContentLoaded: navEntry.domContentLoadedEventEnd - navEntry.navigationStart,
+                loadComplete: navEntry.loadEventEnd - navEntry.navigationStart,
+                firstPaint: navEntry.responseStart - navEntry.navigationStart
+              })
+            }
+          })
+        })
+
+        this.performanceObserver.observe({ type: 'navigation', buffered: true })
+      } catch (error) {
+        console.warn('Performance tracking not available:', error)
+      }
+    }
+
+    public destroy(): void {
+      if (this.performanceObserver) {
+        this.performanceObserver.disconnect()
+      }
+      progressiveLoader.destroy()
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new OptimizedImageManager()
+  })
+
+  // Re-initialize on page navigation
+  document.addEventListener('astro:page-load', () => {
+    new OptimizedImageManager()
+  })
+</script>
