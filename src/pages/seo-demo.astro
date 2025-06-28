@@ -2,13 +2,13 @@
 import Layout from '../layouts/Layout.astro'
 import SEOHead from '../components/SEOHead.astro'
 import { defaultSEOGenerator } from '../utils/seoAutomation'
-import { getAllProjects, getAllPlaylists, getAllPlayground } from '../sanity/queries'
+import { getAllProjects, getAllPlaylists, getAllPlaygroundItems } from '../sanity/queries'
 
 // Get sample content for demonstration
 const [projects, playlists, playground] = await Promise.all([
   getAllProjects(),
   getAllPlaylists(),
-  getAllPlayground()
+  getAllPlaygroundItems()
 ])
 
 const sampleProject = projects[0]

@@ -4,13 +4,13 @@ import {
   type ScheduledContent,
   type ScheduleConfig 
 } from '../utils/contentScheduling'
-import { getAllProjects, getAllPlaylists, getAllPlayground } from '../sanity/queries'
+import { getAllProjects, getAllPlaylists, getAllPlaygroundItems } from '../sanity/queries'
 
 // Simulate scheduled content (in real app, this would come from Sanity with scheduling fields)
 const [projects, playlists, playground] = await Promise.all([
   getAllProjects(),
   getAllPlaylists(), 
-  getAllPlayground()
+  getAllPlaygroundItems()
 ])
 
 // Convert to scheduled content format with simulated scheduling data
