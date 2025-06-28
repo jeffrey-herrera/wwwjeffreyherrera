@@ -1,0 +1,112 @@
+---
+import Layout from '../layouts/Layout.astro'
+import RelatedContent from '../components/RelatedContent.astro'
+import { getAllContentForRelationships } from '../sanity/queries'
+import { getContentRelationships, generateRelationshipInsights } from '../utils/contentRelationships'
+
+const { projects, playlists, playground } = await getAllContentForRelationships()
+
+// Get relationships for featured items
+const featuredProjects = projects.filter(p => p.featured).slice(0, 3)
+const featuredPlaylists = playlists.filter(p => p.featured).slice(0, 3)
+
+const connectionAnalyses = [
+  ...featuredProjects.map(project => ({
+    item: project,
+    analysis: getContentRelationships(project, projects, playlists, playground),
+    type: 'project' as const
+  })),
+  ...featuredPlaylists.map(playlist => ({
+    item: playlist,
+    analysis: getContentRelationships(playlist, projects, playlists, playground),
+    type: 'playlist' as const
+  }))
+]
+
+// Generate overall insights
+const totalConnections = connectionAnalyses.reduce((sum, { analysis }) => sum + analysis.related.length, 0)
+const strongConnections = connectionAnalyses.reduce((sum, { analysis }) => sum + analysis.strongConnections.length, 0)
+const crossDisciplinaryConnections = connectionAnalyses.filter(({ analysis }) => 
+  analysis.related.some(r => r.reasons.some(reason => reason.includes('Cross-disciplinary')))
+).length
+---
+
+<Layout 
+  title="Creative Connections"
+  description="Discover the interconnected web of creative work, showing how design projects and music playlists influence each other across time."
+>
+  <div class="py-16">
+    <header class="mb-16 text-center">
+      <h1 class="text-4xl font-serif mb-4">Creative Connections</h1>
+      <p class="text-xl text-stone-500 mb-8 max-w-2xl mx-auto">
+        Exploring the interconnected web of design, music, and creative experimentation
+      </p>
+      
+      <div class="flex flex-wrap justify-center gap-6 text-sm">
+        <div class="flex flex-col items-center px-4 py-2 bg-stone-100 rounded-lg">
+          <span class="text-2xl font-bold text-orange-600">{totalConnections}</span>
+          <span class="text-stone-600">Total Connections</span>
+        </div>
+        <div class="flex flex-col items-center px-4 py-2 bg-stone-100 rounded-lg">
+          <span class="text-2xl font-bold text-orange-600">{strongConnections}</span>
+          <span class="text-stone-600">Strong Links</span>
+        </div>
+        <div class="flex flex-col items-center px-4 py-2 bg-stone-100 rounded-lg">
+          <span class="text-2xl font-bold text-orange-600">{crossDisciplinaryConnections}</span>
+          <span class="text-stone-600">Cross-Disciplinary</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="space-y-20">
+      {connectionAnalyses.map(({ item, analysis, type }) => (
+        <section class="border-b border-stone-200 pb-16 last:border-b-0">
+          <div class="mb-8">
+            <div class="flex items-center gap-4 mb-4">
+              <h2 class="text-2xl font-serif">
+                {type === 'project' ? item.title : item.name}
+              </h2>
+              <span class="px-3 py-1 bg-orange-100 text-orange-800 text-sm rounded-full">
+                {type === 'project' ? `${item.category} • ${item.year}` : `${item.month} ${item.year}`}
+              </span>
+            </div>
+            
+            {analysis.related.length > 0 && (
+              <div class="text-sm text-stone-600">
+                <p class="mb-2">
+                  <strong>Connection Strength:</strong> {Math.round((analysis.related.reduce((sum, r) => sum + r.score, 0) / analysis.related.length) * 100)}% average similarity
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  {generateRelationshipInsights(analysis).map(insight => (
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded">
+                      {insight}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {analysis.related.length > 0 ? (
+            <RelatedContent 
+              analysis={analysis} 
+              title="Connected Works"
+              showInsights={false}
+              maxItems={6}
+            />
+          ) : (
+            <div class="text-center py-12 text-stone-500">
+              <p>No strong connections found yet.</p>
+              <p class="text-sm mt-2">This item stands uniquely on its own.</p>
+            </div>
+          )}
+        </section>
+      ))}
+    </main>
+
+    <footer class="mt-16 text-center text-sm text-stone-500">
+      <p>Connections are calculated based on shared tags, time periods, categories, and creative themes.</p>
+      <p class="mt-2">The relationship algorithm analyzes {projects.length} projects, {playlists.length} playlists, and {playground.length} playground items.</p>
+    </footer>
+  </div>
+</Layout>

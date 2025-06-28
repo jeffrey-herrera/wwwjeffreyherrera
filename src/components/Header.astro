@@ -41,6 +41,12 @@ const currentPath = Astro.url.pathname;
             <span>Playlists<sup class="text-xs ml-1">{counts.playlists}</sup></span>
           </a>
         </li>
+        <li class="relative">
+          <a href="/connections" class="hover:text-orange-500 transition-colors flex items-center">
+            {currentPath === '/connections' && <span class="w-1 h-1 bg-orange-500 rounded-full mr-1"></span>}
+            <span>Connections</span>
+          </a>
+        </li>
       </ul>
     </nav>
     <div class="col-span-2 counter">

@@ -1,0 +1,107 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import RelatedContent from '../../components/RelatedContent.astro'
+import SanityImage from '../../components/SanityImage.astro'
+import { getProjectBySlug, getAllContentForRelationships } from '../../sanity/queries'
+import { getContentRelationships } from '../../utils/contentRelationships'
+
+export async function getStaticPaths() {
+  const { projects } = await getAllContentForRelationships()
+  
+  return projects.map(project => ({
+    params: { slug: project.slug.current },
+    props: { project }
+  }))
+}
+
+const { project } = Astro.props
+const { projects, playlists, playground } = await getAllContentForRelationships()
+
+// Get relationships for this project
+const relationshipAnalysis = getContentRelationships(project, projects, playlists, playground)
+
+const projectMeta = `${project.category} • ${project.year}`
+---
+
+<Layout 
+  title={project.title}
+  description={project.description}
+>
+  <div class="py-16">
+    <article class="max-w-4xl mx-auto">
+      <header class="mb-12">
+        <div class="flex items-center gap-4 mb-4">
+          <a href="/" class="text-orange-600 hover:text-orange-700 text-sm">
+            ← Back to Work
+          </a>
+        </div>
+        
+        <h1 class="text-4xl font-serif mb-4">{project.title}</h1>
+        
+        <div class="flex flex-wrap items-center gap-4 mb-6">
+          <span class="px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-sm">
+            {projectMeta}
+          </span>
+          {project.featured && (
+            <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
+              Featured
+            </span>
+          )}
+        </div>
+        
+        <p class="text-xl text-stone-600 leading-relaxed">
+          {project.description}
+        </p>
+      </header>
+
+      {project.image && (
+        <div class="mb-12">
+          <SanityImage 
+            source={project.image} 
+            alt={project.title}
+            variant="hero"
+            class="w-full rounded-lg shadow-lg"
+          />
+        </div>
+      )}
+
+      {project.tags && project.tags.length > 0 && (
+        <div class="mb-12">
+          <h3 class="text-lg font-serif mb-4">Technologies & Skills</h3>
+          <div class="flex flex-wrap gap-2">
+            {project.tags.map(tag => (
+              <span class="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {project.externalUrl && (
+        <div class="mb-12">
+          <a 
+            href={project.externalUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+          >
+            <span>View Live Project</span>
+            <span>↗</span>
+          </a>
+        </div>
+      )}
+    </article>
+
+    {relationshipAnalysis.related.length > 0 && (
+      <div class="max-w-6xl mx-auto mt-20">
+        <RelatedContent 
+          analysis={relationshipAnalysis}
+          title="Related Creative Work"
+          showInsights={true}
+          maxItems={8}
+        />
+      </div>
+    )}
+  </div>
+</Layout>

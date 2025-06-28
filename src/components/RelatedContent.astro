@@ -1,0 +1,171 @@
+---
+import type { Project, Playlist, Playground } from '../sanity/types'
+import type { RelationshipAnalysis } from '../utils/contentRelationships'
+import SanityImage from './SanityImage.astro'
+
+interface Props {
+  analysis: RelationshipAnalysis
+  title?: string
+  showInsights?: boolean
+  maxItems?: number
+}
+
+const { 
+  analysis, 
+  title = "Related Work", 
+  showInsights = true,
+  maxItems = 4 
+} = Astro.props
+
+const displayItems = analysis.related.slice(0, maxItems)
+
+function getItemUrl(item: Project | Playlist | Playground): string {
+  switch (item._type) {
+    case 'project':
+      return `/work/${item.slug.current}`
+    case 'playlist':
+      return item.spotifyUrl
+    case 'playground':
+      return `/playground/${item.slug.current}`
+    default:
+      return '#'
+  }
+}
+
+function getItemImage(item: Project | Playlist | Playground) {
+  switch (item._type) {
+    case 'project':
+      return item.image
+    case 'playlist':
+      return item.coverArt
+    case 'playground':
+      return item.image
+    default:
+      return null
+  }
+}
+
+function getItemTitle(item: Project | Playlist | Playground): string {
+  switch (item._type) {
+    case 'project':
+    case 'playground':
+      return item.title
+    case 'playlist':
+      return item.name
+    default:
+      return 'Untitled'
+  }
+}
+
+function getItemMeta(item: Project | Playlist | Playground): string {
+  switch (item._type) {
+    case 'project':
+      return `${item.category} • ${item.year}`
+    case 'playlist':
+      return `${item.month} ${item.year}`
+    case 'playground':
+      return `${item.type} • ${new Date(item.publishedAt).getFullYear()}`
+    default:
+      return ''
+  }
+}
+
+function getTypeIcon(type: string): string {
+  switch (type) {
+    case 'project': return '💼'
+    case 'playlist': return '🎵' 
+    case 'playground': return '🎭'
+    default: return '📄'
+  }
+}
+---
+
+{displayItems.length > 0 && (
+  <section class="related-content">
+    <header class="mb-8">
+      <h3 class="text-2xl font-serif mb-2">{title}</h3>
+      {showInsights && analysis.related.length > 0 && (
+        <div class="flex flex-wrap gap-2 text-sm text-stone-600">
+          {analysis.related.slice(0, 3).map(item => (
+            <span class="inline-flex items-center gap-1 px-2 py-1 bg-stone-100 rounded-full">
+              <span>{getTypeIcon(item.type)}</span>
+              <span>{item.reasons[0]}</span>
+            </span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {displayItems.map(({ item, score, reasons, type }) => (
+        <a 
+          href={getItemUrl(item)}
+          target={type === 'playlist' ? '_blank' : '_self'}
+          rel={type === 'playlist' ? 'noopener noreferrer' : undefined}
+          class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
+        >
+          <div class="aspect-square bg-stone-100 overflow-hidden">
+            {getItemImage(item) ? (
+              <SanityImage 
+                source={getItemImage(item)!} 
+                alt={getItemTitle(item)}
+                variant="thumbnail"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            ) : (
+              <div class="w-full h-full flex items-center justify-center text-4xl text-stone-400">
+                {getTypeIcon(type)}
+              </div>
+            )}
+          </div>
+          
+          <div class="p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-lg">{getTypeIcon(type)}</span>
+              <span class="text-xs uppercase tracking-wider text-stone-500 font-medium">
+                {type}
+              </span>
+              <div class="ml-auto flex items-center">
+                <div class="w-2 h-2 rounded-full bg-orange-500" style={`opacity: ${score}`}></div>
+                <span class="ml-1 text-xs text-stone-400">{Math.round(score * 100)}%</span>
+              </div>
+            </div>
+            
+            <h4 class="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-orange-600 transition-colors">
+              {getItemTitle(item)}
+            </h4>
+            
+            <p class="text-xs text-stone-500 mb-2">
+              {getItemMeta(item)}
+            </p>
+            
+            <div class="text-xs text-stone-400 line-clamp-2">
+              {reasons[0]}
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    {analysis.related.length > maxItems && (
+      <div class="mt-6 text-center">
+        <p class="text-sm text-stone-500">
+          +{analysis.related.length - maxItems} more related items
+        </p>
+      </div>
+    )}
+  </section>
+)}
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .related-content {
+    margin: 2rem 0;
+  }
+</style>

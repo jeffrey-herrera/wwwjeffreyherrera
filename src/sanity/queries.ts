@@ -426,6 +426,69 @@ export const getRecentContent = withErrorHandling(
   'getRecentContent'
 )
 
+// Get all content for relationship analysis
+export const getAllContentForRelationships = withErrorHandling(
+  async (): Promise<{
+    projects: Project[];
+    playlists: Playlist[];
+    playground: Playground[];
+  }> => {
+    return query<{
+      projects: Project[];
+      playlists: Playlist[];
+      playground: Playground[];
+    }>(
+      groq`{
+        "projects": *[_type == "project"] {
+          _id,
+          _type,
+          title,
+          slug,
+          description,
+          category,
+          year,
+          tags,
+          featured,
+          "image": image {
+            asset,
+            alt
+          }
+        },
+        "playlists": *[_type == "playlist"] {
+          _id,
+          _type,
+          name,
+          month,
+          year,
+          featuredTrack,
+          spotifyUrl,
+          "coverArt": coverArt {
+            asset,
+            alt
+          }
+        },
+        "playground": *[_type == "playground"] {
+          _id,
+          _type,
+          title,
+          slug,
+          type,
+          description,
+          tags,
+          publishedAt,
+          "image": image {
+            asset,
+            alt
+          }
+        }
+      }`,
+      {},
+      'all-content-relationships'
+    )
+  },
+  'getAllContentForRelationships'
+)
+
 // Utility function to clear cache (useful for development)
 export function clearCache(): void {
   cache.clear()
