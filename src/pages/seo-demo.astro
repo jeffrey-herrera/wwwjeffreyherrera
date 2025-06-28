@@ -1,0 +1,388 @@
+---
+import Layout from '../layouts/Layout.astro'
+import SEOHead from '../components/SEOHead.astro'
+import { defaultSEOGenerator } from '../utils/seoAutomation'
+import { getAllProjects, getAllPlaylists, getAllPlayground } from '../sanity/queries'
+
+// Get sample content for demonstration
+const [projects, playlists, playground] = await Promise.all([
+  getAllProjects(),
+  getAllPlaylists(),
+  getAllPlayground()
+])
+
+const sampleProject = projects[0]
+const samplePlaylist = playlists[0] 
+const samplePlayground = playground[0]
+
+// Generate SEO data for samples
+const projectSEO = sampleProject ? defaultSEOGenerator.generateProjectSEO(sampleProject, `/work/${sampleProject.slug.current}`) : null
+const playlistSEO = samplePlaylist ? defaultSEOGenerator.generatePlaylistSEO(samplePlaylist, '/playlists') : null
+const playgroundSEO = samplePlayground ? defaultSEOGenerator.generatePlaygroundSEO(samplePlayground, `/playground/${samplePlayground.slug.current}`) : null
+
+// Page SEO
+const pageSEO = {
+  title: 'SEO Automation Demo | Jeffrey Herrera',
+  description: 'Demonstration of intelligent SEO automation with dynamic Open Graph images, structured data, and content-aware metadata generation.',
+  keywords: ['SEO', 'automation', 'Open Graph', 'structured data', 'meta tags'],
+  ogImage: defaultSEOGenerator.generateOGImageUrl({
+    title: 'SEO Automation',
+    subtitle: 'Smart metadata generation',
+    category: 'Demo',
+    template: 'article'
+  }),
+  ogImageAlt: 'SEO Automation Demo',
+  canonicalUrl: `${Astro.site}/seo-demo`,
+  structuredData: {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'SEO Automation Demo',
+    description: 'Demonstration of intelligent SEO automation features',
+    url: `${Astro.site}/seo-demo`
+  },
+  meta: {
+    robots: 'index, follow',
+    author: 'Jeffrey Herrera'
+  }
+}
+---
+
+<html lang="en">
+  <head>
+    <SEOHead seoData={pageSEO} />
+  </head>
+  <body>
+    <Layout 
+      title="SEO Automation Demo"
+      description="Intelligent SEO automation with dynamic Open Graph images and structured data generation."
+    >
+      <div class="py-16">
+        <header class="mb-16 text-center">
+          <h1 class="text-4xl font-serif mb-4">SEO Automation Engine</h1>
+          <p class="text-xl text-stone-500 mb-8 max-w-2xl mx-auto">
+            Automated SEO optimization with dynamic Open Graph images, structured data, 
+            and intelligent metadata generation for every page.
+          </p>
+          
+          <div class="flex flex-wrap justify-center gap-4 mb-8">
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg">
+              <span>🎯</span>
+              <span class="text-sm">Smart metadata</span>
+            </div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg">
+              <span>🖼️</span>
+              <span class="text-sm">Dynamic OG images</span>
+            </div>
+            <div class="inline-flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-700 rounded-lg">
+              <span>📊</span>
+              <span class="text-sm">Structured data</span>
+            </div>
+          </div>
+        </header>
+
+        <main>
+          <!-- SEO Features Overview -->
+          <section class="mb-16">
+            <h2 class="text-2xl font-serif mb-8">Automated SEO Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              
+              <!-- Dynamic OG Images -->
+              <div class="p-6 bg-white rounded-lg border border-stone-200">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                  <span class="text-blue-600 text-xl">🖼️</span>
+                </div>
+                <h3 class="font-semibold mb-3">Dynamic OG Images</h3>
+                <ul class="text-sm text-stone-600 space-y-2">
+                  <li>• Auto-generated social media previews</li>
+                  <li>• Template-based designs (project, playlist, article)</li>
+                  <li>• Color-adaptive styling from content images</li>
+                  <li>• Optimized for Twitter, Facebook, LinkedIn</li>
+                  <li>• SVG-based for crisp rendering at any size</li>
+                </ul>
+              </div>
+
+              <!-- Smart Metadata -->
+              <div class="p-6 bg-white rounded-lg border border-stone-200">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                  <span class="text-green-600 text-xl">🎯</span>
+                </div>
+                <h3 class="font-semibold mb-3">Intelligent Metadata</h3>
+                <ul class="text-sm text-stone-600 space-y-2">
+                  <li>• Content-aware title and description generation</li>
+                  <li>• Keyword extraction from tags and categories</li>
+                  <li>• Optimal length limits for search engines</li>
+                  <li>• Context-specific meta tag selection</li>
+                  <li>• Canonical URL management</li>
+                </ul>
+              </div>
+
+              <!-- Structured Data -->
+              <div class="p-6 bg-white rounded-lg border border-stone-200">
+                <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                  <span class="text-purple-600 text-xl">📊</span>
+                </div>
+                <h3 class="font-semibold mb-3">Structured Data</h3>
+                <ul class="text-sm text-stone-600 space-y-2">
+                  <li>• Schema.org markup for rich snippets</li>
+                  <li>• CreativeWork schema for projects</li>
+                  <li>• MusicPlaylist schema for playlists</li>
+                  <li>• Article schema for playground items</li>
+                  <li>• Enhanced search result appearance</li>
+                </ul>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- Live Examples -->
+          <section class="mb-16">
+            <h2 class="text-2xl font-serif mb-8">Generated SEO Examples</h2>
+            
+            <div class="space-y-8">
+              
+              <!-- Project Example -->
+              {projectSEO && (
+                <div class="p-6 bg-stone-50 rounded-xl">
+                  <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <span class="w-6 h-6 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center">P</span>
+                    Project SEO Example
+                  </h3>
+                  
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- OG Image Preview -->
+                    <div>
+                      <h4 class="font-medium mb-3">Open Graph Preview</h4>
+                      <div class="border border-stone-200 rounded-lg overflow-hidden bg-white">
+                        <img 
+                          src={projectSEO.ogImage} 
+                          alt={projectSEO.ogImageAlt}
+                          class="w-full aspect-[1200/630] object-cover"
+                        />
+                        <div class="p-4">
+                          <h5 class="font-semibold text-sm mb-1">{projectSEO.title}</h5>
+                          <p class="text-xs text-stone-600 mb-2">{projectSEO.description}</p>
+                          <p class="text-xs text-stone-400">jeffreyherrera.com</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Metadata Details -->
+                    <div>
+                      <h4 class="font-medium mb-3">Generated Metadata</h4>
+                      <div class="space-y-3 text-sm">
+                        <div>
+                          <span class="font-medium text-stone-700">Title:</span>
+                          <p class="text-stone-600">{projectSEO.title}</p>
+                        </div>
+                        <div>
+                          <span class="font-medium text-stone-700">Description:</span>
+                          <p class="text-stone-600">{projectSEO.description}</p>
+                        </div>
+                        <div>
+                          <span class="font-medium text-stone-700">Keywords:</span>
+                          <p class="text-stone-600">{projectSEO.keywords.slice(0, 8).join(', ')}...</p>
+                        </div>
+                        <div>
+                          <span class="font-medium text-stone-700">Schema Type:</span>
+                          <p class="text-stone-600">{projectSEO.structuredData['@type']}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <!-- Playlist Example -->
+              {playlistSEO && (
+                <div class="p-6 bg-stone-50 rounded-xl">
+                  <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <span class="w-6 h-6 bg-green-500 text-white text-xs rounded-full flex items-center justify-center">♪</span>
+                    Playlist SEO Example
+                  </h3>
+                  
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- OG Image Preview -->
+                    <div>
+                      <h4 class="font-medium mb-3">Social Media Preview</h4>
+                      <div class="border border-stone-200 rounded-lg overflow-hidden bg-white">
+                        <img 
+                          src={playlistSEO.ogImage} 
+                          alt={playlistSEO.ogImageAlt}
+                          class="w-full aspect-[1200/630] object-cover"
+                        />
+                        <div class="p-4">
+                          <h5 class="font-semibold text-sm mb-1">{playlistSEO.title}</h5>
+                          <p class="text-xs text-stone-600 mb-2">{playlistSEO.description}</p>
+                          <p class="text-xs text-stone-400">jeffreyherrera.com</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Metadata Details -->
+                    <div>
+                      <h4 class="font-medium mb-3">Music-Specific SEO</h4>
+                      <div class="space-y-3 text-sm">
+                        <div>
+                          <span class="font-medium text-stone-700">Title:</span>
+                          <p class="text-stone-600">{playlistSEO.title}</p>
+                        </div>
+                        <div>
+                          <span class="font-medium text-stone-700">Description:</span>
+                          <p class="text-stone-600">{playlistSEO.description}</p>
+                        </div>
+                        <div>
+                          <span class="font-medium text-stone-700">Schema Type:</span>
+                          <p class="text-stone-600">{playlistSEO.structuredData['@type']}</p>
+                        </div>
+                        <div>
+                          <span class="font-medium text-stone-700">Track Count:</span>
+                          <p class="text-stone-600">{playlistSEO.structuredData.numTracks || 'N/A'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </section>
+
+          <!-- Technical Implementation -->
+          <section class="mb-16 bg-stone-50 rounded-xl p-8">
+            <h2 class="text-2xl font-serif mb-6">Implementation Highlights</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              
+              <!-- Backend Processing -->
+              <div>
+                <h3 class="text-lg font-semibold mb-4">Automated Processing</h3>
+                <ul class="text-sm text-stone-600 space-y-2">
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>Content-aware metadata generation</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span>Dynamic OG image creation via API</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span>Schema.org structured data injection</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                    <span>Keyword extraction and optimization</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span>Template-based title generation</span>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Performance Benefits -->
+              <div>
+                <h3 class="text-lg font-semibold mb-4">SEO Benefits</h3>
+                <ul class="text-sm text-stone-600 space-y-2">
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>Improved search engine rankings</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span>Enhanced social media sharing</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span>Rich snippet appearance in search</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                    <span>Consistent brand presentation</span>
+                  </li>
+                  <li class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+                    <span>Zero manual SEO maintenance</span>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- SEO Tools -->
+          <section class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8">
+            <h2 class="text-2xl font-serif mb-4">SEO Testing Tools</h2>
+            <p class="text-stone-600 mb-6">
+              Test the generated SEO data with these popular tools:
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <a 
+                href="https://developers.facebook.com/tools/debug/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+              >
+                <h3 class="font-semibold mb-2">Facebook Debugger</h3>
+                <p class="text-sm text-stone-600">Test Open Graph tags</p>
+              </a>
+              
+              <a 
+                href="https://cards-dev.twitter.com/validator" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+              >
+                <h3 class="font-semibold mb-2">Twitter Validator</h3>
+                <p class="text-sm text-stone-600">Preview Twitter cards</p>
+              </a>
+              
+              <a 
+                href="https://search.google.com/test/rich-results" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+              >
+                <h3 class="font-semibold mb-2">Google Rich Results</h3>
+                <p class="text-sm text-stone-600">Test structured data</p>
+              </a>
+              
+              <a 
+                href="https://www.linkedin.com/post-inspector/" 
+                target="_blank"
+                rel="noopener noreferrer"
+                class="p-4 bg-white rounded-lg hover:shadow-md transition-shadow"
+              >
+                <h3 class="font-semibold mb-2">LinkedIn Inspector</h3>
+                <p class="text-sm text-stone-600">LinkedIn preview test</p>
+              </a>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </Layout>
+  </body>
+</html>
+
+<style>
+  /* Smooth animations */
+  .grid > div {
+    animation: slideUp 0.6s ease-out forwards;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .grid > div:nth-child(1) { animation-delay: 0.1s; }
+  .grid > div:nth-child(2) { animation-delay: 0.2s; }
+  .grid > div:nth-child(3) { animation-delay: 0.3s; }
+  .grid > div:nth-child(4) { animation-delay: 0.4s; }
+
+  @keyframes slideUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
