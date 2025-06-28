@@ -4,7 +4,7 @@ export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import { getFeaturedProjects, getFeaturedPlaylists } from '../sanity/queries';
 import type { Project, Playlist } from '../sanity/types';
-import PlaylistCover from '../components/PlaylistCover.astro';
+import SanityImage from '../components/SanityImage.astro';
 import Link from '../components/Link.astro';
 import ArrowLink from '../components/ArrowLink.astro';
 import Badge from '../components/Badge.astro';
@@ -81,9 +81,10 @@ const featuredPlaylists = await getFeaturedPlaylists();
           <div class="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
             {playlist.coverArt && (
               <div class="aspect-square bg-gray-200">
-                <PlaylistCover 
+                <SanityImage 
                   source={playlist.coverArt}
                   alt={playlist.coverArt.alt || playlist.name}
+                  variant="medium"
                   class="w-full h-full object-cover"
                 />
               </div>
