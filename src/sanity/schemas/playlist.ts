@@ -78,7 +78,12 @@ export default defineType({
       name: 'spotifyUrl',
       title: 'Spotify URL',
       type: 'url',
-      validation: (Rule) => Rule.required()
+      validation: (Rule) => Rule.required().custom(url => {
+        if (url && !url.includes('spotify.com')) {
+          return 'Must be a valid Spotify URL'
+        }
+        return true
+      })
     }),
     defineField({
       name: 'publishedAt',
@@ -94,6 +99,14 @@ export default defineType({
       initialValue: false
     }),
     defineField({
+      name: 'featuredOrder',
+      title: 'Featured Order',
+      type: 'number',
+      description: 'Order for featured playlists (lower numbers appear first)',
+      hidden: ({ document }) => !document?.featured,
+      validation: (Rule) => Rule.min(0)
+    }),
+    defineField({
       name: 'description',
       title: 'Description',
       type: 'text',
@@ -106,6 +119,8 @@ export default defineType({
       name: 'featuredFirst',
       by: [
         { field: 'featured', direction: 'desc' },
+        { field: 'featuredOrder', direction: 'asc' },
+        { field: 'year', direction: 'desc' },
         { field: 'publishedAt', direction: 'desc' }
       ]
     },
@@ -126,20 +141,22 @@ export default defineType({
       month: 'month',
       year: 'year',
       featured: 'featured',
+      featuredOrder: 'featuredOrder',
       featuredTrack: 'featuredTrack',
       publishedAt: 'publishedAt',
       media: 'coverArt'
     },
     prepare(selection) {
-      const { title, month, year, featured, featuredTrack, publishedAt, media } = selection
+      const { title, month, year, featured, featuredOrder, featuredTrack, publishedAt, media } = selection
       
       const featuredBadge = featured ? '🌟 ' : ''
+      const orderInfo = featured && featuredOrder ? ` #${featuredOrder}` : ''
       const trackInfo = featuredTrack ? ` • ${featuredTrack}` : ''
       const date = publishedAt ? new Date(publishedAt).toLocaleDateString() : 'Draft'
       
       return {
         title: `${featuredBadge}🎵 ${title}`,
-        subtitle: `${month} ${year} • ${date}${trackInfo}${featured ? ' • Featured' : ''}`,
+        subtitle: `${month} ${year} • ${date}${orderInfo}${trackInfo}${featured ? ' • Featured' : ''}`,
         media: media
       }
     }

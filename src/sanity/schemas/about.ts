@@ -44,6 +44,13 @@ export default defineType({
       validation: (Rule) => Rule.required()
     }),
     defineField({
+      name: 'shortBio',
+      title: 'Short Bio',
+      type: 'text',
+      description: 'Brief bio for homepage and meta descriptions (max 200 characters)',
+      validation: (Rule) => Rule.max(200)
+    }),
+    defineField({
       name: 'profileImage',
       title: 'Profile Image',
       type: 'image',

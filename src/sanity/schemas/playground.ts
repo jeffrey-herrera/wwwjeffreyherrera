@@ -101,6 +101,26 @@ export default defineType({
       type: 'boolean',
       description: 'Show this content on the homepage',
       initialValue: false
+    }),
+    defineField({
+      name: 'featuredOrder',
+      title: 'Featured Order',
+      type: 'number',
+      description: 'Order for featured playground items (lower numbers appear first)',
+      hidden: ({ document }) => !document?.featured,
+      validation: (Rule) => Rule.min(0)
+    }),
+    defineField({
+      name: 'externalUrl',
+      title: 'External URL',
+      type: 'url',
+      description: 'Link to live project or external content'
+    }),
+    defineField({
+      name: 'githubUrl',
+      title: 'GitHub URL',
+      type: 'url',
+      description: 'Link to source code repository'
     })
   ],
   orderings: [
@@ -109,6 +129,7 @@ export default defineType({
       name: 'featuredFirst',
       by: [
         { field: 'featured', direction: 'desc' },
+        { field: 'featuredOrder', direction: 'asc' },
         { field: 'publishedAt', direction: 'desc' }
       ]
     },
@@ -128,12 +149,13 @@ export default defineType({
       title: 'title',
       type: 'type',
       featured: 'featured',
+      featuredOrder: 'featuredOrder',
       publishedAt: 'publishedAt',
       tags: 'tags',
       media: 'image'
     },
     prepare(selection) {
-      const { title, type, featured, publishedAt, tags, media } = selection
+      const { title, type, featured, featuredOrder, publishedAt, tags, media } = selection
       
              // Format type with emoji
        const typeEmojis: Record<string, string> = {
@@ -144,6 +166,7 @@ export default defineType({
        
        const typeLabel = type ? `${typeEmojis[type] || '🎭'} ${type.charAt(0).toUpperCase() + type.slice(1)}` : '🎭 Playground item'
       const featuredBadge = featured ? '⭐ ' : ''
+      const orderInfo = featured && featuredOrder ? ` #${featuredOrder}` : ''
       const tagCount = tags?.length ? ` • ${tags.length} tags` : ''
       
       // Format date
@@ -151,7 +174,7 @@ export default defineType({
       
       return {
         title: `${featuredBadge}${title}`,
-        subtitle: `${typeLabel} • ${date}${tagCount}${featured ? ' • Featured' : ''}`,
+        subtitle: `${typeLabel} • ${date}${orderInfo}${tagCount}${featured ? ' • Featured' : ''}`,
         media: media
       }
     }

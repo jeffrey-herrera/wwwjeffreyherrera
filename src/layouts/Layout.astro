@@ -19,8 +19,11 @@ const {
 } = Astro.props;
 
 const pageTitle = title === 'Jeffrey Herrera - Design Director' ? title : `${title} | Jeffrey Herrera`;
-const currentUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
-const ogImage = new URL(image, Astro.site).href;
+
+// Fallback for development when Astro.site might be undefined
+const baseUrl = Astro.site?.href || 'http://localhost:4321';
+const currentUrl = canonical || new URL(Astro.url.pathname, baseUrl).href;
+const ogImage = new URL(image, baseUrl).href;
 ---
 
 <!DOCTYPE html>

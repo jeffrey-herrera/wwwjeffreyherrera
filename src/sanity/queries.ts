@@ -70,7 +70,7 @@ async function query<T>(
 export const getAllProjects = withErrorHandling(
   async (): Promise<Project[]> => {
     return query<Project[]>(
-      groq`*[_type == "project"] | order(coalesce(featuredOrder, _createdAt) desc) {
+      groq`*[_type == "project"] | order(featured desc, featuredOrder asc, _createdAt desc) {
         _id,
         title,
         slug,
@@ -79,10 +79,10 @@ export const getAllProjects = withErrorHandling(
         category,
         featured,
         featuredOrder,
+        year,
         "image": image {
           asset,
-          alt,
-          caption
+          alt
         },
         _createdAt,
         _updatedAt
@@ -121,10 +121,10 @@ export const getFeaturedProjects = withErrorHandling(
         category,
         featured,
         featuredOrder,
+        year,
         "image": image {
           asset,
-          alt,
-          caption
+          alt
         },
         _createdAt,
         _updatedAt`,
@@ -173,7 +173,7 @@ export const getProjectBySlug = withErrorHandling(
 export const getAllPlaylists = withErrorHandling(
   async (): Promise<Playlist[]> => {
     return query<Playlist[]>(
-      groq`*[_type == "playlist"] | order(coalesce(featuredOrder, year) desc, month desc) {
+      groq`*[_type == "playlist"] | order(featured desc, featuredOrder asc, year desc, month desc) {
         _id,
         name,
         month,
@@ -199,7 +199,7 @@ export const getAllPlaylists = withErrorHandling(
 export const getFeaturedPlaylists = withErrorHandling(
   async (): Promise<Playlist[]> => {
     return query<Playlist[]>(
-      groq`*[_type == "playlist" && featured == true] | order(coalesce(featuredOrder, year) desc, month desc) {
+      groq`*[_type == "playlist" && featured == true] | order(featuredOrder asc, year desc, month desc) {
         _id,
         name,
         month,
@@ -335,11 +335,8 @@ export const getAbout = withErrorHandling(
         bio,
         "profileImage": profileImage {
           asset,
-          alt,
-          caption
+          alt
         },
-        skills,
-        experience,
         contact,
         _createdAt,
         _updatedAt

@@ -59,7 +59,21 @@ export default defineType({
       initialValue: false
     }),
     defineField({
-      name: 'projectImage',
+      name: 'featuredOrder',
+      title: 'Featured Order',
+      type: 'number',
+      description: 'Order for featured projects (lower numbers appear first)',
+      hidden: ({ document }) => !document?.featured,
+      validation: (Rule) => Rule.min(0)
+    }),
+    defineField({
+      name: 'year',
+      title: 'Year',
+      type: 'number',
+      validation: (Rule) => Rule.required().min(2020).max(new Date().getFullYear() + 1)
+    }),
+    defineField({
+      name: 'image',
       title: 'Project Image',
       type: 'image',
       options: {
@@ -70,12 +84,39 @@ export default defineType({
           name: 'alt',
           type: 'string',
           title: 'Alternative Text',
+        },
+        {
+          name: 'caption',
+          type: 'string',
+          title: 'Caption',
         }
-      ]
+      ],
+      validation: (Rule) => Rule.required()
     }),
     defineField({
-      name: 'projectUrl',
-      title: 'Project URL',
+      name: 'gallery',
+      title: 'Project Gallery',
+      type: 'array',
+      of: [{
+        type: 'image',
+        options: { hotspot: true },
+        fields: [
+          { name: 'alt', type: 'string', title: 'Alt text' },
+          { name: 'caption', type: 'string', title: 'Caption' }
+        ]
+      }],
+      description: 'Additional images for the project page'
+    }),
+    defineField({
+      name: 'content',
+      title: 'Project Content',
+      type: 'array',
+      of: [{ type: 'block' }],
+      description: 'Detailed project description and case study'
+    }),
+    defineField({
+      name: 'externalUrl',
+      title: 'External URL',
       type: 'url',
       description: 'Link to the live project'
     }),
@@ -92,7 +133,8 @@ export default defineType({
       name: 'featuredFirst',
       by: [
         { field: 'featured', direction: 'desc' },
-        { field: 'title', direction: 'asc' }
+        { field: 'featuredOrder', direction: 'asc' },
+        { field: '_createdAt', direction: 'desc' }
       ]
     },
     {
@@ -111,18 +153,22 @@ export default defineType({
       title: 'title',
       category: 'category',
       featured: 'featured',
-      media: 'projectImage',
+      featuredOrder: 'featuredOrder',
+      year: 'year',
+      media: 'image',
       tags: 'tags'
     },
     prepare(selection) {
-      const { title, category, featured, media, tags } = selection
+      const { title, category, featured, featuredOrder, year, media, tags } = selection
       const categoryLabel = category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Project'
       const featuredBadge = featured ? '⭐ ' : ''
+      const orderInfo = featured && featuredOrder ? ` #${featuredOrder}` : ''
+      const yearInfo = year ? ` • ${year}` : ''
       const tagCount = tags?.length ? ` • ${tags.length} tags` : ''
       
       return {
         title: `${featuredBadge}${title}`,
-        subtitle: `${categoryLabel}${tagCount}${featured ? ' • Featured' : ''}`,
+        subtitle: `${categoryLabel}${yearInfo}${orderInfo}${tagCount}${featured ? ' • Featured' : ''}`,
         media: media
       }
     }

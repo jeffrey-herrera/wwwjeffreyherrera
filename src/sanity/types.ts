@@ -27,17 +27,24 @@ export interface Project extends SanityDocument {
   _type: 'project'
   title: string
   featured: boolean
+  featuredOrder?: number
   year: number
   description: string
   tags: string[]
   slug: Slug
   category: string
+  image: SanityImage
+  gallery?: SanityImage[]
+  content?: PortableTextBlock[]
+  externalUrl?: string
+  githubUrl?: string
 }
 
 // Playlist type based on your existing schema
 export interface Playlist extends SanityDocument {
   _type: 'playlist'
   featured: boolean
+  featuredOrder?: number
   name: string
   coverArt: SanityImage
   publishedAt: string
@@ -45,7 +52,8 @@ export interface Playlist extends SanityDocument {
   year: number
   spotifyUrl: string
   month: string
-  featuredTrack: string
+  featuredTrack?: string
+  description?: string
 }
 
 // Portable Text types for rich content
@@ -72,6 +80,7 @@ export interface About extends SanityDocument {
   _type: 'about'
   title: string
   bio: PortableTextBlock[]
+  shortBio?: string
   profileImage: SanityImage
   contact: {
     email: string
@@ -86,10 +95,13 @@ export interface Playground extends SanityDocument {
   title: string
   type: 'image' | 'writing' | 'experiment'
   description?: string
-  content?: string // Rich text for writing
+  content?: PortableTextBlock[] // Rich text for writing
   image?: SanityImage
-  tags: string[]
+  tags?: string[]
   publishedAt: string
   slug: Slug
   featured: boolean
+  featuredOrder?: number
+  externalUrl?: string
+  githubUrl?: string
 }
