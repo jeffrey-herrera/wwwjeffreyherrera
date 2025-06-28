@@ -428,6 +428,16 @@ const featuredProjects = projects.slice(0, 6)
       border-color: currentColor;
     }
   }
+
+  /* Scroll reveal animations */
+  [data-scroll-reveal] {
+    opacity: 0;
+    transition: none;
+  }
+
+  [data-scroll-reveal].scroll-revealed {
+    opacity: 1;
+  }
 </style>
 
 <script>
@@ -519,6 +529,12 @@ const featuredProjects = projects.slice(0, 6)
 
       // Observe elements with scroll reveal
       document.querySelectorAll('[data-scroll-reveal]').forEach(el => {
+        // Initially hide elements that will be revealed
+        const config = this.getElementConfig(el)
+        el.style.opacity = '0'
+        el.style.transform = this.getInitialTransform(config.animation)
+        el.style.transition = 'none' // Prevent initial animation
+        
         this.scrollObserver.observe(el)
       })
     }
@@ -542,14 +558,16 @@ const featuredProjects = projects.slice(0, 6)
     }
 
     triggerScrollReveal(element, config) {
-      element.style.opacity = '0'
-      element.style.transform = this.getInitialTransform(config.animation)
+      // Apply transition and animate
       element.style.transition = `all ${config.duration}ms cubic-bezier(0.4, 0, 0.2, 1)`
       
+      // Use a small delay to ensure transition is applied
       requestAnimationFrame(() => {
-        element.style.opacity = '1'
-        element.style.transform = 'none'
-        element.classList.add('scroll-revealed')
+        requestAnimationFrame(() => {
+          element.style.opacity = '1'
+          element.style.transform = 'none'
+          element.classList.add('scroll-revealed')
+        })
       })
     }
 

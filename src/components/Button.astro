@@ -36,6 +36,7 @@ const baseClasses = `
   transition-all duration-200 ease-out
   focus:outline-none focus:ring-4
   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:translate-y-0 disabled:hover:shadow-none
+  relative overflow-hidden
 `
 
 const linkProps = external && href 
@@ -69,4 +70,69 @@ const linkProps = external && href
   >
     <slot />
   </button>
-)} 
+)}
+
+<style>
+  @keyframes ripple {
+    from {
+      transform: scale(0);
+      opacity: 1;
+    }
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .ripple-effect {
+    animation: ripple 600ms ease-out;
+  }
+</style>
+
+<script>
+  function createRippleEffect(element, event) {
+    const rect = element.getBoundingClientRect()
+    const size = Math.max(rect.width, rect.height)
+    const x = event.clientX - rect.left - size / 2
+    const y = event.clientY - rect.top - size / 2
+    
+    const ripple = document.createElement('div')
+    ripple.className = 'ripple-effect'
+    ripple.style.cssText = `
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(0);
+      left: ${x}px;
+      top: ${y}px;
+      width: ${size}px;
+      height: ${size}px;
+      pointer-events: none;
+      z-index: 1;
+    `
+    
+    element.appendChild(ripple)
+    
+    // Remove ripple after animation
+    setTimeout(() => {
+      if (ripple.parentNode) {
+        ripple.parentNode.removeChild(ripple)
+      }
+    }, 600)
+  }
+
+  // Add ripple effect to all buttons in this component
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('button') || e.target.closest('a[class*="bg-orange"], a[class*="bg-stone"]')) {
+      const element = e.target.closest('button, a')
+      if (element && !element.disabled) {
+        createRippleEffect(element, e)
+      }
+    }
+  })
+
+  // Re-initialize on page navigation for Astro
+  document.addEventListener('astro:page-load', () => {
+    // Event listener is already global, no need to re-add
+  })
+</script> 

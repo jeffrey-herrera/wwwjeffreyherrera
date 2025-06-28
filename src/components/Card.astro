@@ -32,6 +32,7 @@ const CardElement = href ? 'a' : 'div';
     ${variant === 'secondary' ? 'bg-stone-950 text-white shadow-sm hover:shadow-stone-950/25 hover:shadow-xl' : ''}
     ${variant === 'tertiary' ? 'bg-gray-50 text-gray-700 border border-gray-200 shadow-sm hover:shadow-lg' : ''}
     card card--${variant} ${className}
+    ${href ? 'cursor-pointer' : ''}
   `}
   {...(href ? linkProps : {})}
 >
@@ -87,4 +88,69 @@ const CardElement = href ? 'a' : 'div';
   .card div:last-child > :last-child {
     margin-bottom: 0;
   }
-</style> 
+
+  /* Ripple effect styles */
+  @keyframes ripple {
+    from {
+      transform: scale(0);
+      opacity: 1;
+    }
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .ripple-effect {
+    animation: ripple 600ms ease-out;
+  }
+</style>
+
+<script>
+  function createCardRippleEffect(element, event) {
+    // Only add ripple if it's a clickable card
+    if (!element.href && !element.onclick) return
+    
+    const rect = element.getBoundingClientRect()
+    const size = Math.max(rect.width, rect.height)
+    const x = event.clientX - rect.left - size / 2
+    const y = event.clientY - rect.top - size / 2
+    
+    const ripple = document.createElement('div')
+    ripple.className = 'ripple-effect'
+    ripple.style.cssText = `
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(0);
+      left: ${x}px;
+      top: ${y}px;
+      width: ${size}px;
+      height: ${size}px;
+      pointer-events: none;
+      z-index: 1;
+    `
+    
+    element.appendChild(ripple)
+    
+    // Remove ripple after animation
+    setTimeout(() => {
+      if (ripple.parentNode) {
+        ripple.parentNode.removeChild(ripple)
+      }
+    }, 600)
+  }
+
+  // Add ripple effect to clickable cards
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.card')
+    if (card && (card.href || card.onclick)) {
+      createCardRippleEffect(card, e)
+    }
+  })
+
+  // Re-initialize on page navigation for Astro
+  document.addEventListener('astro:page-load', () => {
+    // Event listener is already global, no need to re-add
+  })
+</script> 
