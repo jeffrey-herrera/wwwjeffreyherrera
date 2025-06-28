@@ -10,7 +10,15 @@ interface Props {
 const { playlist } = Astro.props;
 ---
 
-<a href={playlist.spotifyUrl} target="_blank" rel="noopener noreferrer" class="playlist-card group block relative overflow-hidden rounded-lg bg-black text-white" style={`--bg-url: url(${urlFor(playlist.coverArt).width(100).blur(100).url()})`}>
+<a 
+  href={playlist.spotifyUrl} 
+  target="_blank" 
+  rel="noopener noreferrer" 
+  class="playlist-card group block relative overflow-hidden rounded-lg bg-black text-white" 
+  style={`--bg-url: url(${urlFor(playlist.coverArt).width(100).blur(100).url()})`}
+  data-playlist-id={playlist._id}
+  data-playlist-name={playlist.name}
+>
   <div class="absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-110 bg-cover" style="background-image: var(--bg-url);"></div>
   <div class="relative z-10 flex flex-col h-full">
     <div class="aspect-square">
@@ -61,13 +69,16 @@ const { playlist } = Astro.props;
 </style>
 
 <script>
-  // Optimized 3D card effect with throttling
+  // Optimized 3D card effect with analytics tracking
   let animationId: number;
   
   document.addEventListener('DOMContentLoaded', () => {
     const cards = document.querySelectorAll('.playlist-card') as NodeListOf<HTMLElement>;
     
     cards.forEach(card => {
+      let hoverStartTime: number;
+      
+      // 3D hover effects
       card.addEventListener('mousemove', (e) => {
         if (animationId) {
           cancelAnimationFrame(animationId);
@@ -90,6 +101,10 @@ const { playlist } = Astro.props;
         });
       });
       
+      card.addEventListener('mouseenter', () => {
+        hoverStartTime = performance.now();
+      });
+      
       card.addEventListener('mouseleave', () => {
         if (animationId) {
           cancelAnimationFrame(animationId);
@@ -98,6 +113,24 @@ const { playlist } = Astro.props;
         card.style.removeProperty('--rotate-y');
         card.style.removeProperty('--mouse-x');
         card.style.removeProperty('--mouse-y');
+        
+        // Track hover duration if it was meaningful (>1 second)
+        if (hoverStartTime && performance.now() - hoverStartTime > 1000) {
+          const playlistId = card.dataset.playlistId;
+          const playlistName = card.dataset.playlistName;
+          if (playlistId && playlistName && window.trackContentInteraction) {
+            window.trackContentInteraction('playlist', playlistId, playlistName, 'interact');
+          }
+        }
+      });
+      
+      // Track clicks to Spotify
+      card.addEventListener('click', () => {
+        const playlistId = card.dataset.playlistId;
+        const playlistName = card.dataset.playlistName;
+        if (playlistId && playlistName && window.trackPlaylistPlay) {
+          window.trackPlaylistPlay(playlistId, playlistName);
+        }
       });
     });
   });

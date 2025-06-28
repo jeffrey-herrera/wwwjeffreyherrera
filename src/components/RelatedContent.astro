@@ -103,6 +103,10 @@ function getTypeIcon(type: string): string {
           target={type === 'playlist' ? '_blank' : '_self'}
           rel={type === 'playlist' ? 'noopener noreferrer' : undefined}
           class="group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"
+          data-content-type={type}
+          data-content-id={item._id}
+          data-content-title={getItemTitle(item)}
+          data-connection-score={score}
         >
           <div class="aspect-square bg-stone-100 overflow-hidden">
             {getItemImage(item) ? (
@@ -169,3 +173,26 @@ function getTypeIcon(type: string): string {
     margin: 2rem 0;
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const relatedLinks = document.querySelectorAll('.related-content a[data-content-type]') as NodeListOf<HTMLElement>
+    
+    relatedLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        const contentType = link.dataset.contentType as 'project' | 'playlist' | 'playground'
+        const contentId = link.dataset.contentId
+        const contentTitle = link.dataset.contentTitle
+        const score = link.dataset.connectionScore
+        
+        if (contentType && contentId && contentTitle && window.trackConnectionExplore) {
+          window.trackConnectionExplore(
+            window.location.pathname, 
+            contentId, 
+            `${contentType} (${Math.round(parseFloat(score || '0') * 100)}% match)`
+          )
+        }
+      })
+    })
+  })
+</script>
