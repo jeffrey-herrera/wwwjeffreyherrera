@@ -36,6 +36,13 @@ const seasonOptions = sortedSeasons.map(season => ({
   label: season.charAt(0).toUpperCase() + season.slice(1) 
 }));
 
+// Month order mapping for sorting (December = 12, January = 1)
+const monthOrder: Record<string, number> = {
+  'december': 12, 'november': 11, 'october': 10, 'september': 9,
+  'august': 8, 'july': 7, 'june': 6, 'may': 5,
+  'april': 4, 'march': 3, 'february': 2, 'january': 1
+};
+
 // Group playlists by year
 const playlistsByYear = playlists.reduce((acc, playlist) => {
   const year = playlist.year;
@@ -45,6 +52,15 @@ const playlistsByYear = playlists.reduce((acc, playlist) => {
   acc[year].push(playlist);
   return acc;
 }, {} as Record<number, typeof playlists>);
+
+// Sort playlists within each year by month (December to January)
+Object.keys(playlistsByYear).forEach(year => {
+  playlistsByYear[parseInt(year)].sort((a, b) => {
+    const monthA = monthOrder[a.month.toLowerCase()] || 0;
+    const monthB = monthOrder[b.month.toLowerCase()] || 0;
+    return monthB - monthA; // Descending order (Dec to Jan)
+  });
+});
 
 // Sort years in descending order
 const sortedYears = Object.keys(playlistsByYear)
@@ -56,7 +72,7 @@ const sortedYears = Object.keys(playlistsByYear)
   title="Playlists"
   description="Monthly music curation spanning different moods and moments. Discover curated playlists by Jeffrey Herrera."
 >
-  <div class="py-16">
+  <div class="py-16" class="mb-24">
     <header class="mb-24">
       <h1 class="text-4xl font-serif mb-4">Playlists</h1>
       <p class="text-xl text-stone-500">Monthly music curation spanning different moods and moments</p>
