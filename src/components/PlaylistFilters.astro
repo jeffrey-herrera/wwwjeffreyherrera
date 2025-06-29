@@ -7,22 +7,23 @@ interface Props {
 const { years, seasons } = Astro.props
 
 import Button from './Button.astro'
+import { MusicNote } from 'phosphor-react'
 ---
 
 <section class="mb-16">
-  <div class="flex flex-wrap gap-4 items-center px-10 py-8 bg-stone-100 rounded-lg">
+  <div class="flex flex-wrap gap-4 items-center">
     <!-- Year Filter -->
     <div class="relative">
-      <button class="filter-dropdown-trigger inline-flex items-center justify-center font-medium rounded-full text-sm px-6 py-2 bg-stone-50 text-stone-900 border border-stone-200 transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-stone-50/50 cursor-pointer" data-filter="year">
+      <button class="filter-dropdown-trigger inline-flex items-center justify-center font-medium rounded-full text-base px-8 py-3 bg-stone-50 text-stone-900 border border-stone-200 transition-all duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-stone-50/50 cursor-pointer hover:bg-stone-100" data-filter="year">
         <svg class="w-3 h-3 mr-2 text-orange-500" fill="currentColor" viewBox="0 0 256 256">
           <path d="M200,136H56a8,8,0,0,1,0-16H200a8,8,0,0,1,0,16Zm24-48H32a8,8,0,0,1,0-16H224a8,8,0,0,1,0,16Zm-72,96H104a8,8,0,0,1,0-16h48a8,8,0,0,1,0,16Z"/>
         </svg>
         <span data-selected="All Years">All Years</span>
-        <svg class="w-4 h-4 ml-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="dropdown-arrow w-4 h-4 ml-2 text-orange-500 transition-transform duration-200 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
-      <div class="dropdown-menu hidden absolute top-full mt-2 bg-white border border-stone-200 rounded-xl shadow-lg z-10 min-w-[140px]">
+      <div class="dropdown-menu absolute top-full mt-2 bg-white border border-stone-200 rounded-xl shadow-lg z-10 min-w-[140px] opacity-0 invisible transform scale-95 transition-all duration-200 ease-out overflow-hidden">
         <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 rounded-t-lg cursor-pointer" data-value="">All Years</button>
         {years.map(year => (
           <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 cursor-pointer" data-value={year.toString()}>{year}</button>
@@ -32,16 +33,16 @@ import Button from './Button.astro'
 
     <!-- Season Filter -->
     <div class="relative">
-      <button class="filter-dropdown-trigger inline-flex items-center justify-center font-medium rounded-full text-sm px-6 py-2 bg-stone-50 text-stone-900 border border-stone-200 transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-stone-50/50 cursor-pointer" data-filter="season">
+      <button class="filter-dropdown-trigger inline-flex items-center justify-center font-medium rounded-full text-base px-8 py-3 bg-stone-50 text-stone-900 border border-stone-200 transition-all duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-stone-50/50 cursor-pointer hover:bg-stone-100" data-filter="season">
         <svg class="w-3 h-3 mr-2 text-orange-500" fill="currentColor" viewBox="0 0 256 256">
           <path d="M200,136H56a8,8,0,0,1,0-16H200a8,8,0,0,1,0,16Zm24-48H32a8,8,0,0,1,0-16H224a8,8,0,0,1,0,16Zm-72,96H104a8,8,0,0,1,0-16h48a8,8,0,0,1,0,16Z"/>
         </svg>
         <span data-selected="All Seasons">All Seasons</span>
-        <svg class="w-4 h-4 ml-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="dropdown-arrow w-4 h-4 ml-2 text-orange-500 transition-transform duration-200 ease-out" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
         </svg>
       </button>
-      <div class="dropdown-menu hidden absolute top-full mt-2 bg-white border border-stone-200 rounded-xl shadow-lg z-10 min-w-[140px]">
+      <div class="dropdown-menu absolute top-full mt-2 bg-white border border-stone-200 rounded-xl shadow-lg z-10 min-w-[140px] opacity-0 invisible transform scale-95 transition-all duration-200 ease-out overflow-hidden">
         <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 rounded-t-lg cursor-pointer" data-value="">All Seasons</button>
         {seasons.map(season => (
           <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 cursor-pointer" data-value={season}>
@@ -52,7 +53,7 @@ import Button from './Button.astro'
     </div>
 
     <!-- Clear Filter Button (hidden by default) -->
-    <button id="clear-filter-btn" class="hidden inline-flex items-center justify-center font-medium rounded-full text-sm px-4 py-2 bg-red-100 text-red-700 border border-red-200 transition-all duration-200 ease-out hover:bg-red-200 focus:outline-none focus:ring-4 focus:ring-red-50/50 cursor-pointer" style="display: none;" aria-hidden="true">
+    <button id="clear-filter-btn" class="hidden inline-flex items-center justify-center font-medium rounded-full text-base px-8 py-3 bg-red-100 text-red-700 border border-red-200 transition-all duration-200 ease-out hover:bg-red-200 focus:outline-none focus:ring-4 focus:ring-red-50/50 cursor-pointer" style="display: none;" aria-hidden="true">
       <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
@@ -60,7 +61,8 @@ import Button from './Button.astro'
     </button>
 
     <!-- Feeling Lucky Button -->
-    <Button variant="primary" size="small" id="feeling-lucky-btn" class="pulse-border cursor-pointer">
+    <Button variant="primary" size="medium" id="feeling-lucky-btn" class="pulse-border cursor-pointer">
+      <MusicNote size={20} className="mr-2" />
       Feeling Lucky?
     </Button>
   </div>
@@ -78,6 +80,24 @@ import Button from './Button.astro'
 
   .pulse-border:hover {
     animation: pulse-border 1.5s infinite;
+  }
+
+  /* Active dropdown button styling */
+  .filter-dropdown-trigger.active {
+    background-color: rgb(231 229 228); /* stone-200 */
+    border-color: rgb(214 211 209); /* stone-300 */
+  }
+
+  /* Active dropdown arrow rotation */
+  .filter-dropdown-trigger.active .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown menu show state */
+  .dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1);
   }
 </style>
 
@@ -134,16 +154,20 @@ import Button from './Button.astro'
         const handler = (e: Event) => {
           e.stopPropagation()
           const dropdown = trigger.nextElementSibling as HTMLElement
-          const isOpen = !dropdown.classList.contains('hidden')
+          const isOpen = dropdown.classList.contains('show')
           
-          // Close all dropdowns
+          // Close all dropdowns and remove active states
           document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            menu.classList.add('hidden')
+            menu.classList.remove('show')
+          })
+          document.querySelectorAll('.filter-dropdown-trigger').forEach(btn => {
+            btn.classList.remove('active')
           })
           
           // Toggle current dropdown
           if (!isOpen) {
-            dropdown.classList.remove('hidden')
+            dropdown.classList.add('show')
+            trigger.classList.add('active')
           }
         }
         this.addTrackedEventListener(trigger, 'click', handler)
@@ -185,8 +209,9 @@ import Button from './Button.astro'
           this.applyFilters()
           this.updateClearButton()
           
-          // Close dropdown
-          dropdown.classList.add('hidden')
+          // Close dropdown and remove active state
+          dropdown.classList.remove('show')
+          trigger.classList.remove('active')
         }
         this.addTrackedEventListener(option, 'click', handler)
       })
@@ -194,7 +219,10 @@ import Button from './Button.astro'
       // Close dropdowns when clicking outside
       const outsideHandler = () => {
         document.querySelectorAll('.dropdown-menu').forEach(menu => {
-          menu.classList.add('hidden')
+          menu.classList.remove('show')
+        })
+        document.querySelectorAll('.filter-dropdown-trigger').forEach(btn => {
+          btn.classList.remove('active')
         })
       }
       this.addTrackedEventListener(document, 'click', outsideHandler)
