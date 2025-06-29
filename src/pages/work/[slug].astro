@@ -1,12 +1,10 @@
 ---
 import Layout from '../../layouts/Layout.astro'
-import RelatedContent from '../../components/RelatedContent.astro'
 import SanityImage from '../../components/SanityImage.astro'
-import { getProjectBySlug, getAllContentForRelationships } from '../../sanity/queries'
-import { getContentRelationships } from '../../utils/contentRelationships'
+import { getProjectBySlug, getAllProjects } from '../../sanity/queries'
 
 export async function getStaticPaths() {
-  const { projects } = await getAllContentForRelationships()
+  const projects = await getAllProjects()
   
   return projects.map(project => ({
     params: { slug: project.slug.current },
@@ -15,10 +13,10 @@ export async function getStaticPaths() {
 }
 
 const { project } = Astro.props
-const { projects, playlists, playground } = await getAllContentForRelationships()
 
-// Get relationships for this project
-const relationshipAnalysis = getContentRelationships(project, projects, playlists, playground)
+// Simple related content (just get latest projects for now)
+const allProjects = await getAllProjects()
+const relatedProjects = allProjects.filter(p => p.slug.current !== project.slug.current).slice(0, 3)
 
 const projectMeta = `${project.category} • ${project.year}`
 ---
@@ -93,14 +91,35 @@ const projectMeta = `${project.category} • ${project.year}`
       )}
     </article>
 
-    {relationshipAnalysis.related.length > 0 && (
+    {relatedProjects.length > 0 && (
       <div class="max-w-6xl mx-auto mt-20">
-        <RelatedContent 
-          analysis={relationshipAnalysis}
-          title="Related Creative Work"
-          showInsights={true}
-          maxItems={8}
-        />
+        <h2 class="text-2xl font-serif mb-8">Related Projects</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {relatedProjects.map(relatedProject => (
+            <a href={`/work/${relatedProject.slug.current}`} class="group">
+              <div class="bg-white rounded-lg border border-stone-200 overflow-hidden hover:shadow-lg transition-shadow">
+                {relatedProject.image && (
+                  <div class="aspect-video bg-stone-100">
+                    <SanityImage 
+                      source={relatedProject.image} 
+                      alt={relatedProject.title}
+                      variant="thumbnail"
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
+                )}
+                <div class="p-4">
+                  <h3 class="font-semibold group-hover:text-orange-600 transition-colors">
+                    {relatedProject.title}
+                  </h3>
+                  <p class="text-sm text-stone-600 mt-1">
+                    {relatedProject.description}
+                  </p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
       </div>
     )}
   </div>

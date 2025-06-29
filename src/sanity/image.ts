@@ -5,8 +5,16 @@ import { sanityClient } from './client'
 // Initialize the image URL builder
 const builder = imageUrlBuilder(sanityClient)
 
-// Helper function to generate image URLs
+// Helper function to generate image URLs with error handling
 export function urlFor(source: SanityImageSource) {
+  if (!source) {
+    throw new Error('Image source is required')
+  }
+  
+  if (typeof source === 'object' && !source.asset && !source._ref) {
+    throw new Error('Invalid image source: missing asset or _ref')
+  }
+  
   return builder.image(source)
 }
 

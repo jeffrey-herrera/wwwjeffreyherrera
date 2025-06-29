@@ -1,0 +1,404 @@
+---
+interface Props {
+  years: number[]
+  seasons: string[]
+}
+
+const { years, seasons } = Astro.props
+
+import Button from './Button.astro'
+---
+
+<section class="mb-16">
+  <div class="flex flex-wrap gap-4 items-center px-10 py-8 bg-stone-100 rounded-lg">
+    <!-- Year Filter -->
+    <div class="relative">
+      <button class="filter-dropdown-trigger inline-flex items-center justify-center font-medium rounded-full text-sm px-6 py-2 bg-stone-50 text-stone-900 border border-stone-200 transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-stone-50/50 cursor-pointer" data-filter="year">
+        <svg class="w-3 h-3 mr-2 text-orange-500" fill="currentColor" viewBox="0 0 256 256">
+          <path d="M200,136H56a8,8,0,0,1,0-16H200a8,8,0,0,1,0,16Zm24-48H32a8,8,0,0,1,0-16H224a8,8,0,0,1,0,16Zm-72,96H104a8,8,0,0,1,0-16h48a8,8,0,0,1,0,16Z"/>
+        </svg>
+        <span data-selected="All Years">All Years</span>
+        <svg class="w-4 h-4 ml-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <div class="dropdown-menu hidden absolute top-full mt-2 bg-white border border-stone-200 rounded-xl shadow-lg z-10 min-w-[140px]">
+        <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 rounded-t-lg cursor-pointer" data-value="">All Years</button>
+        {years.map(year => (
+          <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 cursor-pointer" data-value={year.toString()}>{year}</button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Season Filter -->
+    <div class="relative">
+      <button class="filter-dropdown-trigger inline-flex items-center justify-center font-medium rounded-full text-sm px-6 py-2 bg-stone-50 text-stone-900 border border-stone-200 transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-stone-50/50 cursor-pointer" data-filter="season">
+        <svg class="w-3 h-3 mr-2 text-orange-500" fill="currentColor" viewBox="0 0 256 256">
+          <path d="M200,136H56a8,8,0,0,1,0-16H200a8,8,0,0,1,0,16Zm24-48H32a8,8,0,0,1,0-16H224a8,8,0,0,1,0,16Zm-72,96H104a8,8,0,0,1,0-16h48a8,8,0,0,1,0,16Z"/>
+        </svg>
+        <span data-selected="All Seasons">All Seasons</span>
+        <svg class="w-4 h-4 ml-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+      <div class="dropdown-menu hidden absolute top-full mt-2 bg-white border border-stone-200 rounded-xl shadow-lg z-10 min-w-[140px]">
+        <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 rounded-t-lg cursor-pointer" data-value="">All Seasons</button>
+        {seasons.map(season => (
+          <button class="filter-option w-full text-left px-4 py-2 hover:bg-stone-50 cursor-pointer" data-value={season}>
+            {season.charAt(0).toUpperCase() + season.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <!-- Clear Filter Button (hidden by default) -->
+    <button id="clear-filter-btn" class="hidden inline-flex items-center justify-center font-medium rounded-full text-sm px-4 py-2 bg-red-100 text-red-700 border border-red-200 transition-all duration-200 ease-out hover:bg-red-200 focus:outline-none focus:ring-4 focus:ring-red-50/50 cursor-pointer" style="display: none;" aria-hidden="true">
+      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      Clear
+    </button>
+
+    <!-- Feeling Lucky Button -->
+    <Button variant="primary" size="small" id="feeling-lucky-btn" class="pulse-border cursor-pointer">
+      Feeling Lucky?
+    </Button>
+  </div>
+</section>
+
+<style>
+  @keyframes pulse-border {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
+    }
+  }
+
+  .pulse-border:hover {
+    animation: pulse-border 1.5s infinite;
+  }
+</style>
+
+<script>
+  class PlaylistFilters {
+    private selectedYear: string = ''
+    private selectedSeason: string = ''
+    private eventListeners: Array<{element: Element | Document, event: string, handler: EventListener}> = []
+
+    constructor() {
+      this.init()
+    }
+
+    // Clean up method to remove all event listeners
+    public cleanup(): void {
+      this.eventListeners.forEach(({element, event, handler}) => {
+        element.removeEventListener(event, handler)
+      })
+      this.eventListeners = []
+    }
+
+    // Helper method to track event listeners
+    private addTrackedEventListener(element: Element | Document, event: string, handler: EventListener): void {
+      element.addEventListener(event, handler)
+      this.eventListeners.push({element, event, handler})
+    }
+
+    private init(): void {
+      // Ensure state is properly initialized
+      this.selectedYear = ''
+      this.selectedSeason = ''
+      
+      // Force hide clear button immediately with multiple methods
+      const clearBtn = document.getElementById('clear-filter-btn')
+      if (clearBtn) {
+        clearBtn.classList.add('hidden')
+        clearBtn.style.display = 'none'
+        clearBtn.setAttribute('aria-hidden', 'true')
+      }
+      
+      this.setupDropdowns()
+      this.setupFeelingLucky()
+      this.setupClearButton()
+      
+      // Small delay to ensure DOM is ready, then update
+      setTimeout(() => {
+        this.updateClearButton()
+      }, 10)
+    }
+
+    private setupDropdowns(): void {
+      // Dropdown trigger handlers
+      document.querySelectorAll('.filter-dropdown-trigger').forEach(trigger => {
+        const handler = (e: Event) => {
+          e.stopPropagation()
+          const dropdown = trigger.nextElementSibling as HTMLElement
+          const isOpen = !dropdown.classList.contains('hidden')
+          
+          // Close all dropdowns
+          document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.add('hidden')
+          })
+          
+          // Toggle current dropdown
+          if (!isOpen) {
+            dropdown.classList.remove('hidden')
+          }
+        }
+        this.addTrackedEventListener(trigger, 'click', handler)
+      })
+
+      // Filter option handlers
+      document.querySelectorAll('.filter-option').forEach(option => {
+        const handler = (e: Event) => {
+          const button = e.target as HTMLButtonElement
+          const value = button.dataset.value || ''
+          const dropdown = button.closest('.dropdown-menu') as HTMLElement
+          const trigger = dropdown.previousElementSibling as HTMLElement
+          const filterType = trigger.dataset.filter
+          const selectedSpan = trigger.querySelector('[data-selected]') as HTMLElement
+
+          // Update display
+          selectedSpan.textContent = button.textContent || ''
+          
+          // Update state and clear the other filter
+          if (filterType === 'year') {
+            this.selectedYear = value
+            this.selectedSeason = ''
+            // Reset season dropdown display
+            const seasonTrigger = document.querySelector('[data-filter="season"] [data-selected]') as HTMLElement
+            if (seasonTrigger) {
+              seasonTrigger.textContent = 'All Seasons'
+            }
+          } else if (filterType === 'season') {
+            this.selectedSeason = value
+            this.selectedYear = ''
+            // Reset year dropdown display
+            const yearTrigger = document.querySelector('[data-filter="year"] [data-selected]') as HTMLElement
+            if (yearTrigger) {
+              yearTrigger.textContent = 'All Years'
+            }
+          }
+
+          // Apply filters
+          this.applyFilters()
+          this.updateClearButton()
+          
+          // Close dropdown
+          dropdown.classList.add('hidden')
+        }
+        this.addTrackedEventListener(option, 'click', handler)
+      })
+
+      // Close dropdowns when clicking outside
+      const outsideHandler = () => {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.classList.add('hidden')
+        })
+      }
+      this.addTrackedEventListener(document, 'click', outsideHandler)
+    }
+
+    private setupFeelingLucky(): void {
+      const luckyBtn = document.getElementById('feeling-lucky-btn')
+      if (luckyBtn) {
+        const handler = () => {
+          this.feelingLucky()
+        }
+        this.addTrackedEventListener(luckyBtn, 'click', handler)
+      }
+    }
+
+    private setupClearButton(): void {
+      const clearBtn = document.getElementById('clear-filter-btn')
+      if (clearBtn) {
+        const handler = () => {
+          this.clearFilters()
+        }
+        this.addTrackedEventListener(clearBtn, 'click', handler)
+      }
+    }
+
+    private updateClearButton(): void {
+      const clearBtn = document.getElementById('clear-filter-btn')
+      if (clearBtn) {
+        // Check if any filter is actually active (not empty string)
+        const hasActiveFilter = (this.selectedYear && this.selectedYear !== '') || 
+                              (this.selectedSeason && this.selectedSeason !== '')
+        
+        console.log('Clear button update:', {
+          selectedYear: this.selectedYear,
+          selectedSeason: this.selectedSeason,
+          hasActiveFilter,
+          button: clearBtn
+        })
+        
+        if (hasActiveFilter) {
+          clearBtn.classList.remove('hidden')
+          clearBtn.style.display = ''
+          clearBtn.removeAttribute('aria-hidden')
+        } else {
+          clearBtn.classList.add('hidden')
+          clearBtn.style.display = 'none'
+          clearBtn.setAttribute('aria-hidden', 'true')
+        }
+      }
+    }
+
+    private clearFilters(): void {
+      // Reset state to empty strings
+      this.selectedYear = ''
+      this.selectedSeason = ''
+
+      // Reset dropdown displays
+      const yearTrigger = document.querySelector('[data-filter="year"] [data-selected]') as HTMLElement
+      const seasonTrigger = document.querySelector('[data-filter="season"] [data-selected]') as HTMLElement
+      
+      if (yearTrigger) {
+        yearTrigger.textContent = 'All Years'
+      }
+      if (seasonTrigger) {
+        seasonTrigger.textContent = 'All Seasons'
+      }
+
+      // Apply filters (will show all) and update clear button
+      this.applyFilters()
+      this.updateClearButton()
+      
+      // Force hide the clear button
+      const clearBtn = document.getElementById('clear-filter-btn')
+      if (clearBtn) {
+        clearBtn.classList.add('hidden')
+      }
+    }
+
+    private getSeasonFromMonth(month: string): string {
+      const monthMap: Record<string, string> = {
+        'january': 'winter', 'february': 'winter', 'march': 'spring',
+        'april': 'spring', 'may': 'spring', 'june': 'summer',
+        'july': 'summer', 'august': 'summer', 'september': 'fall',
+        'october': 'fall', 'november': 'fall', 'december': 'winter'
+      }
+      return monthMap[month.toLowerCase()] || 'unknown'
+    }
+
+    private applyFilters(): void {
+      const sections = document.querySelectorAll('[data-year-section]')
+      
+      // If filtering by season, show year headers and matching playlists
+      if (this.selectedSeason) {
+        sections.forEach(section => {
+          const sectionHeader = section.querySelector('h2') as HTMLElement
+          const playlistCards = section.querySelectorAll('[data-playlist]')
+          let visibleCards = 0
+
+          // Show the year header
+          if (sectionHeader) {
+            sectionHeader.style.display = 'block'
+          }
+
+          // Show section and check each playlist for season match
+          (section as HTMLElement).style.display = 'block'
+
+          playlistCards.forEach(card => {
+            try {
+              const playlistData = JSON.parse(card.getAttribute('data-playlist') || '{}')
+              const playlistSeason = this.getSeasonFromMonth(playlistData.month || '')
+              
+              if (playlistSeason === this.selectedSeason) {
+                (card as HTMLElement).style.display = 'block'
+                visibleCards++
+              } else {
+                (card as HTMLElement).style.display = 'none'
+              }
+            } catch (e) {
+              console.warn('Failed to parse playlist data:', e)
+            }
+          })
+
+          // Hide section if no cards are visible
+          if (visibleCards === 0) {
+            (section as HTMLElement).style.display = 'none'
+          }
+        })
+      } else {
+        // Normal filtering by year or show all
+        sections.forEach(section => {
+          const sectionYear = section.getAttribute('data-year-section')
+          const sectionHeader = section.querySelector('h2') as HTMLElement
+          const playlistCards = section.querySelectorAll('[data-playlist]')
+
+          // Show the year header
+          if (sectionHeader) {
+            sectionHeader.style.display = 'block'
+          }
+
+          // Show/hide section based on year filter
+          if (this.selectedYear && sectionYear !== this.selectedYear) {
+            (section as HTMLElement).style.display = 'none'
+            return
+          } else {
+            (section as HTMLElement).style.display = 'block'
+          }
+
+          // Show all playlists in the section when not filtering by season
+          playlistCards.forEach(card => {
+            (card as HTMLElement).style.display = 'block'
+          })
+        })
+      }
+    }
+
+    private feelingLucky(): void {
+      const visiblePlaylists: any[] = []
+      const sections = document.querySelectorAll('[data-year-section]')
+      
+      sections.forEach(section => {
+        if ((section as HTMLElement).style.display !== 'none') {
+          const cards = section.querySelectorAll('[data-playlist]')
+          cards.forEach(card => {
+            if ((card as HTMLElement).style.display !== 'none') {
+              const data = card.getAttribute('data-playlist')
+              if (data) {
+                try {
+                  visiblePlaylists.push(JSON.parse(data))
+                } catch (e) {
+                  console.warn('Failed to parse playlist data:', e)
+                }
+              }
+            }
+          })
+        }
+      })
+
+      if (visiblePlaylists.length > 0) {
+        const randomPlaylist = visiblePlaylists[Math.floor(Math.random() * visiblePlaylists.length)]
+        if (randomPlaylist.spotifyUrl) {
+          window.open(randomPlaylist.spotifyUrl, '_blank')
+        }
+      }
+    }
+  }
+
+  let filtersInstance: PlaylistFilters | null = null
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM ready - initializing filters')
+    if (filtersInstance) {
+      console.log('Cleaning up existing instance')
+      filtersInstance.cleanup()
+    }
+    filtersInstance = new PlaylistFilters()
+    console.log('New filters instance created')
+  })
+
+  // Reinitialize on Astro page navigation
+  document.addEventListener('astro:page-load', () => {
+    if (filtersInstance) {
+      filtersInstance.cleanup()
+    }
+    filtersInstance = new PlaylistFilters()
+  })
+</script>

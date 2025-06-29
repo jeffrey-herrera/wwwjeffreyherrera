@@ -1,7 +1,48 @@
-// Dynamic Open Graph image generation API endpoint
+// Simple Open Graph image generation API endpoint
 import type { APIRoute } from 'astro'
-import { OGImageGenerator, type OGImageOptions } from '../../utils/seoAutomation'
 import { extractImageColors, type ColorPalette } from '../../utils/colorExtraction'
+
+// Simple OG image generation without external dependencies
+const generateSimpleOG = (options: {
+  title: string
+  subtitle?: string
+  category?: string
+  width: number
+  height: number
+  palette?: ColorPalette
+}) => {
+  const { title, subtitle, category, width, height, palette } = options
+  
+  const bgColor = palette?.background || '#f97316'
+  const textColor = palette?.text || '#ffffff'
+  const accentColor = palette?.accent || '#ffffff'
+  
+  return `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="${bgColor}" />
+      ${category ? `
+        <text x="60" y="120" font-family="system-ui, sans-serif" font-size="24" 
+              font-weight="500" fill="${accentColor}" opacity="0.8">
+          ${category}
+        </text>
+      ` : ''}
+      <text x="60" y="${category ? '180' : '140'}" font-family="system-ui, sans-serif" font-size="64" 
+            font-weight="bold" fill="${textColor}" style="line-height: 1.2">
+        <tspan x="60" dy="0">${title.length > 30 ? title.substring(0, 30) + '...' : title}</tspan>
+      </text>
+      ${subtitle ? `
+        <text x="60" y="${category ? '260' : '220'}" font-family="system-ui, sans-serif" font-size="28" 
+              font-weight="400" fill="${textColor}" opacity="0.8">
+          ${subtitle.length > 50 ? subtitle.substring(0, 50) + '...' : subtitle}
+        </text>
+      ` : ''}
+      <text x="60" y="${height - 60}" font-family="system-ui, sans-serif" font-size="20" 
+            font-weight="500" fill="${textColor}" opacity="0.6">
+        jeffreyherrera.com
+      </text>
+    </svg>
+  `
+}
 
 export const GET: APIRoute = async ({ url, request }) => {
   try {
@@ -11,7 +52,6 @@ export const GET: APIRoute = async ({ url, request }) => {
     const title = searchParams.get('title') || 'Jeffrey Herrera'
     const subtitle = searchParams.get('subtitle') || undefined
     const category = searchParams.get('category') || undefined
-    const template = (searchParams.get('template') as OGImageOptions['template']) || 'minimal'
     const width = parseInt(searchParams.get('w') || '1200')
     const height = parseInt(searchParams.get('h') || '630')
     const imageUrl = searchParams.get('image')
@@ -58,11 +98,10 @@ export const GET: APIRoute = async ({ url, request }) => {
     }
 
     // Generate SVG
-    const svg = OGImageGenerator.generateSVG({
+    const svg = generateSimpleOG({
       title,
       subtitle,
       category,
-      template,
       width,
       height,
       palette

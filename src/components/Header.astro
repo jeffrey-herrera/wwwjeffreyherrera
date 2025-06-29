@@ -1,20 +1,28 @@
 ---
-import { getAllCounts, getAbout } from '../sanity/queries';
+import { getProjectsCount, getPlaygroundCount, getPlaylistsCount, getAbout } from '../sanity/queries';
 import NYCClock from './NYCClock.astro';
 
-const [counts, about] = await Promise.all([
-  getAllCounts(),
+const [projectsCount, playgroundCount, playlistsCount, about] = await Promise.all([
+  getProjectsCount(),
+  getPlaygroundCount(), 
+  getPlaylistsCount(),
   getAbout()
 ]);
+
+const counts = {
+  projects: projectsCount,
+  playground: playgroundCount,
+  playlists: playlistsCount
+};
 
 // Get current page path to determine active state
 const currentPath = Astro.url.pathname;
 ---
 
-<div class="w-full">
+<header class="w-full">
   <div class="w-full h-4 bg-orange-500 rounded-b-lg" />
   <div class="py-6 container-grid">
-    <h1 class="col-span-4 text-stone-400">Jeffrey Herrera \ Design Director</h1>
+    <h1 class="font-sans col-span-4 text-stone-400">Jeff Herrera — Creative Director</h1>
     <nav class="col-span-4">
       <ul class="flex gap-4">
         <li class="relative">
@@ -56,4 +64,4 @@ const currentPath = Astro.url.pathname;
       </ul>
     </div>
   </div>
-</div>
+</header>

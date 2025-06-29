@@ -11,14 +11,14 @@ interface Props {
 }
 
 const {
-  title = 'Jeffrey Herrera - Design Director',
-  description = 'Design Director crafting digital experiences through innovative design, development, and creative exploration.',
-  image = '/og-image.jpg',
+  title = 'Jeff Herrera',
+  description = 'ÑYC based creative director shaping brand experiences across physical and digital spaces.',
+  image = '/images/SEOImage.png',
   canonical,
   noindex = false
 } = Astro.props;
 
-const pageTitle = title === 'Jeffrey Herrera - Design Director' ? title : `${title} | Jeffrey Herrera`;
+const pageTitle = title === 'Jeff Herrera' ? title : `${title} | Jeff Herrera`;
 
 // Fallback for development when Astro.site might be undefined
 const baseUrl = Astro.site?.href || 'http://localhost:4321';
@@ -35,7 +35,7 @@ const ogImage = new URL(image, baseUrl).href;
   <!-- Primary Meta Tags -->
   <title>{pageTitle}</title>
   <meta name="description" content={description}>
-  <meta name="author" content="Jeffrey Herrera">
+  <meta name="author" content="Jeff Herrera">
   <link rel="canonical" href={currentUrl}>
   
   {noindex && <meta name="robots" content="noindex, nofollow">}
@@ -46,7 +46,7 @@ const ogImage = new URL(image, baseUrl).href;
   <meta property="og:title" content={pageTitle}>
   <meta property="og:description" content={description}>
   <meta property="og:image" content={ogImage}>
-  <meta property="og:site_name" content="Jeffrey Herrera">
+  <meta property="og:site_name" content="Jeff Herrera">
   
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
@@ -56,25 +56,37 @@ const ogImage = new URL(image, baseUrl).href;
   <meta property="twitter:image" content={ogImage}>
   
   <!-- Additional Meta Tags -->
-  <meta name="theme-color" content="#f97316">
+  <meta name="theme-color" content="#FAFAF9">
   <meta name="format-detection" content="telephone=no">
   
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="icon" type="image/png" href="/favicon.png">
+  <!-- Favicon and App Icons -->
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-touch-fullscreen" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Jeff Herrera">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="/site.webmanifest">
   
-  <!-- Preload critical fonts -->
+  <!-- Preload critical resources -->
+  <link rel="preload" href={ogImage} as="image">
   <link rel="preload" href="/fonts/degular_regular-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/degular_semibold-webfont.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/degular_mono_regular-webfont.woff2" as="font" type="font/woff2" crossorigin>
   
+  <!-- iOS PWA Splash Screen -->
+  <script src="https://unpkg.com/ios-pwa-splash@1.0.0/cdn.min.js"></script>
+  <script>(window as any).iosPWASplash?.('/apple-touch-icon.png', '#FAFAF9');</script>
+
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Person",
-      "name": "Jeffrey Herrera",
-      "jobTitle": "Design Director",
+      "name": "Jeff Herrera",
+      "jobTitle": "Creative Director",
       "url": "https://jeffreyherrera.com",
       "sameAs": [
         "https://instagram.com/jeffreyherrera",
@@ -87,6 +99,222 @@ const ogImage = new URL(image, baseUrl).href;
   <Header />
   <slot />
   
+  <script>
+    // Custom cursor with smooth transitions
+    class CustomCursor {
+      private cursor: HTMLDivElement | null = null;
+      private isActive: boolean = false;
+
+      constructor() {
+        this.init();
+      }
+
+      init(): void {
+        // Create cursor element
+        this.cursor = document.createElement('div');
+        this.cursor.className = 'custom-cursor';
+        document.body.appendChild(this.cursor);
+        document.body.classList.add('custom-cursor-active');
+
+        // Track mouse movement
+        document.addEventListener('mousemove', (e: MouseEvent) => {
+          if (this.cursor) {
+            this.cursor.style.left = e.clientX + 'px';
+            this.cursor.style.top = e.clientY + 'px';
+          }
+        });
+
+        // Handle link and button hover events
+        document.addEventListener('mouseover', (e: MouseEvent) => {
+          const target = e.target as Element;
+          const interactiveElement = this.getInteractiveElement(target);
+          if (interactiveElement && !this.isHeaderLink(interactiveElement)) {
+            this.showCursor();
+          }
+        });
+
+        document.addEventListener('mouseout', (e: MouseEvent) => {
+          const target = e.target as Element;
+          const interactiveElement = this.getInteractiveElement(target);
+          if (interactiveElement && !this.isHeaderLink(interactiveElement)) {
+            this.hideCursor();
+          }
+        });
+      }
+
+      getInteractiveElement(element: Element | null): Element | null {
+        if (!element) return null;
+        if (element.tagName === 'A' || element.tagName === 'BUTTON') return element;
+        return element.closest('a, button');
+      }
+
+      isHeaderLink(element: Element | null): boolean {
+        if (!element) return false;
+        // Exclude playlist filter elements from custom cursor
+        if (element.closest('.filter-dropdown-trigger') || 
+            element.closest('.filter-option') || 
+            element.closest('.dropdown-menu') ||
+            element.closest('#feeling-lucky-btn') ||
+            element.closest('#clear-filter-btn')) {
+          return true;
+        }
+        return element.closest('header') !== null;
+      }
+
+      showCursor(): void {
+        if (this.cursor) {
+          this.cursor.classList.add('active');
+          this.isActive = true;
+        }
+      }
+
+      hideCursor(): void {
+        if (this.cursor) {
+          this.cursor.classList.remove('active');
+          this.isActive = false;
+        }
+      }
+    }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      new CustomCursor();
+    });
+  </script>
+
+  <script>
+    // Simple Intersection Observer for scroll animations
+    class ScrollAnimations {
+      private observer: IntersectionObserver | null = null;
+
+      constructor() {
+        this.setupIntersectionObserver();
+      }
+
+      setupIntersectionObserver(): void {
+        if (!('IntersectionObserver' in window)) return;
+
+        this.observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view');
+              // Unobserve after animation to improve performance
+              this.observer?.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -50px 0px'
+        });
+
+        // Observe elements with scroll-animate class
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+          this.observer?.observe(el);
+        });
+      }
+
+      destroy(): void {
+        if (this.observer) {
+          this.observer.disconnect();
+        }
+      }
+    }
+
+    // Initialize scroll animations when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      new ScrollAnimations();
+    });
+
+    // Reinitialize on Astro page navigation
+    document.addEventListener('astro:page-load', () => {
+      new ScrollAnimations();
+    });
+  </script>
+
+  <style>
+    /* Custom cursor */
+    .custom-cursor-active * {
+      cursor: none !important;
+    }
+
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      background: #f97316;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: all 0.15s ease;
+      mix-blend-mode: difference;
+    }
+
+    .custom-cursor.active {
+      opacity: 1;
+      transform: scale(1.2);
+    }
+
+    /* Scroll Animation Styles */
+    .scroll-animate {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .scroll-animate.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Staggered animations for multiple elements */
+    .scroll-animate:nth-child(1) { transition-delay: 0ms; }
+    .scroll-animate:nth-child(2) { transition-delay: 100ms; }
+    .scroll-animate:nth-child(3) { transition-delay: 200ms; }
+    .scroll-animate:nth-child(4) { transition-delay: 300ms; }
+    .scroll-animate:nth-child(5) { transition-delay: 400ms; }
+
+    /* Special animation variants */
+    .scroll-animate.fade-up {
+      transform: translateY(20px);
+    }
+
+    .scroll-animate.fade-scale {
+      transform: translateY(20px) scale(0.95);
+    }
+
+    .scroll-animate.fade-scale.in-view {
+      transform: translateY(0) scale(1);
+    }
+
+    .scroll-animate.slide-left {
+      transform: translateX(-30px);
+    }
+
+    .scroll-animate.slide-left.in-view {
+      transform: translateX(0);
+    }
+
+    .scroll-animate.slide-right {
+      transform: translateX(30px);
+    }
+
+    .scroll-animate.slide-right.in-view {
+      transform: translateX(0);
+    }
+
+    /* Respect user motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-animate {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+  </style>
 
 </body>
 </html>

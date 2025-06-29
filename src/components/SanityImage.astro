@@ -5,7 +5,7 @@ import { sanityClient } from '../sanity/client'
 import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
 
 interface Props {
-  source: SanityImageSource
+  source?: SanityImageSource | null
   alt: string
   variant?: 'thumbnail' | 'medium' | 'large' | 'hero' | 'profile'
   class?: string
@@ -34,14 +34,23 @@ const variantSizes = {
 
 const { width, height } = variantSizes[variant]
 
-// Generate image URL if source exists
-const imageUrl = source ? builder
-  .image(source)
-  .width(width)
-  .height(height)
-  .quality(quality)
-  .format('webp')
-  .url() : null
+// Generate image URL if source exists and is valid
+let imageUrl: string | null = null
+
+if (source) {
+  try {
+    imageUrl = builder
+      .image(source)
+      .width(width)
+      .height(height)
+      .quality(quality)
+      .format('webp')
+      .url()
+  } catch (error) {
+    console.warn('Failed to generate image URL:', error)
+    imageUrl = null
+  }
+}
 ---
 
 {!source || !imageUrl ? (

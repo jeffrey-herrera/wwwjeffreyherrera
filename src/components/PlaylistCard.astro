@@ -15,17 +15,17 @@ const { playlist } = Astro.props;
   target="_blank" 
   rel="noopener noreferrer" 
   class="playlist-card group block relative overflow-hidden rounded-lg bg-black text-white" 
-  style={`--bg-url: url(${urlFor(playlist.coverArt).width(100).blur(100).url()})`}
+  style={playlist.coverArt ? `--bg-url: url(${urlFor(playlist.coverArt).width(100).blur(100).url()})` : ''}
   data-playlist-id={playlist._id}
   data-playlist-name={playlist.name}
 >
-  <div class="absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-110 bg-cover" style="background-image: var(--bg-url);"></div>
+  <div class="absolute inset-0 w-full h-full transition-transform duration-500 ease-out group-hover:scale-110 bg-cover" style={playlist.coverArt ? "background-image: var(--bg-url);" : "background: #1a1a1a;"}></div>
   <div class="relative z-10 flex flex-col h-full">
     <div class="aspect-square">
       <SanityImage source={playlist.coverArt} alt={playlist.name} variant="thumbnail" class="w-full h-full object-cover" />
     </div>
     <div class="p-4 flex-grow backdrop-blur-xl bg-black/30">
-      <h3 class="font-semibold text-lg truncate">{playlist.name}</h3>
+      <h3 class="font-sans font-semibold truncate">{playlist.name}</h3>
       <div class="mt-2 flex items-center">
         {playlist.featured && (
           <span class="text-xs font-bold uppercase tracking-wider bg-orange-500 text-black px-2 py-1 rounded-full mr-2">Featured</span>

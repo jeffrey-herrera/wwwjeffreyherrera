@@ -4,7 +4,7 @@ export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import { getAbout } from '../sanity/queries';
 import type { About } from '../sanity/types';
-import SanityImage from '../components/SanityImage.astro';
+import Button from '../components/Button.astro';
 import PortableTextComponent from '../components/PortableText.tsx';
 import StackedProfileImage from '../components/StackedProfileImage.astro';
 
@@ -15,8 +15,11 @@ if (!about) {
 }
 ---
 
-<Layout>
-  <div class="py-6 bg-stone-50 container-grid">
+<Layout title="About">
+  <div class="bg-stone-50 container-grid">
+    <section class="my-16 max-w-[65ch] col-span-4">
+      <h1 class="text-4xl font-serif mb-4">About</h1>
+    </section>
     <section class="fixed bottom-8 left-8 z-10" data-scroll-reveal='{"animation": "slideUp", "delay": 800, "duration": 600}'>
       {about.profileImage && (
         <StackedProfileImage 
@@ -25,11 +28,12 @@ if (!about) {
         />
       )}
     </section>
-    <section class="my-16 col-span-4 col-start-9" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
+    <section class="my-16 max-w-[65ch] col-span-4 col-start-5" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
       <div class="prose prose-stone max-w-none">
         <PortableTextComponent value={about.bio} client:load />
       </div>
-      <a href={`mailto:${about.contact.email}`} class="text-orange-600 hover:underline">
+
+      <Button variant="tertiary" href={`mailto:${about.contact.email}`} class="mt-8">Get in touch</Button>
     </section>
   </div>
 </Layout>
