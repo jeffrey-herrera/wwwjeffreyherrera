@@ -10,6 +10,7 @@ import ArrowLink from '../components/ArrowLink.astro';
 import Badge from '../components/Badge.astro';
 import Button from '../components/Button.astro';
 import Hero from '../components/Hero.astro';
+import { Image } from 'astro:assets';
 
 const allProjects = await getAllProjects();
 const allPlaylists = await getAllPlaylists();
@@ -21,4 +22,88 @@ const featuredPlaylists = allPlaylists.filter(p => p.featured).slice(0, 3);
 
 <Layout>
   <Hero />
+  <section class="sticky top-48">
+    <div class="w-[9.375rem] rounded-t-lg h-6 bg-orange-500 mt-48" />
+         <div class="selected-work w-full h-[9.375rem] relative overflow-hidden rounded-tr-lg" id="marquee-section" data-speed="80">
+       <!-- Optimized background image -->
+       <Image 
+         src="/images/selected-work.png" 
+         alt="Selected work background"
+         width={1920}
+         height={150}
+         class="absolute inset-0 w-full h-full object-cover object-top"
+         loading="eager"
+         format="webp"
+       />
+       <div class="marquee-container h-full flex items-center relative z-10">
+           <div class="marquee-content flex items-center gap-16 whitespace-nowrap flex-nowrap" id="marquee-content">
+         <!-- Content will be generated dynamically by JavaScript -->
+         <span class="text-orange-100 text-md font-light uppercase">↓</span>
+         <span class="text-orange-100 text-md font-light uppercase">Selected&nbsp;work</span>
+       </div>
+       </div>
+     </div>
+  </section>
 </Layout>
+
+<script>
+  // Dynamic marquee content generation
+  class DynamicMarquee {
+    private container: HTMLElement | null = null;
+    private content: HTMLElement | null = null;
+
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      this.container = document.getElementById('marquee-section');
+      this.content = document.getElementById('marquee-content');
+      
+      if (!this.container || !this.content) return;
+
+      this.setSpeed();
+      this.generateContent();
+      
+      // Regenerate content on window resize
+      window.addEventListener('resize', () => {
+        this.generateContent();
+      });
+    }
+
+    private setSpeed(): void {
+      if (!this.container) return;
+      
+      // Get speed from data attribute (defaults to 30 seconds)
+      const speed = this.container.getAttribute('data-speed') || '30';
+      
+      // Set CSS custom property for animation duration
+      this.container.style.setProperty('--marquee-duration', `${speed}s`);
+    }
+
+    private generateContent(): void {
+      if (!this.container || !this.content) return;
+
+      // Get container width  
+      const containerWidth = this.container.offsetWidth;
+      
+      // Simple approach: estimate units needed and generate plenty
+      const estimatedUnits = Math.ceil(containerWidth / 150); // Rough estimate
+      const totalUnits = estimatedUnits * 3; // Generate 3x for safety
+      
+      // Generate content with alternating pattern
+      let contentHTML = '';
+      for (let i = 0; i < totalUnits; i++) {
+        contentHTML += '<span class="text-orange-100 text-md font-light uppercase">↓</span>';
+        contentHTML += '<span class="text-orange-100 text-md font-light uppercase">Selected&nbsp;work</span>';
+      }
+      
+      this.content.innerHTML = contentHTML;
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new DynamicMarquee();
+  });
+</script>

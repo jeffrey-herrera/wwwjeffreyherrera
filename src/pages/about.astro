@@ -20,7 +20,7 @@ if (!about) {
     <section class="my-16 max-w-[65ch] col-span-4">
       <h1 class="text-4xl font-serif mb-4">About</h1>
     </section>
-    <section class="fixed bottom-8 left-8 z-10" data-scroll-reveal='{"animation": "slideUp", "delay": 800, "duration": 600}'>
+    <section class="fixed bottom-8 left-8 z-10" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
       {about.profileImage && (
         <StackedProfileImage 
           profileImage={about.profileImage}
@@ -28,7 +28,7 @@ if (!about) {
         />
       )}
     </section>
-    <section class="my-16 max-w-[65ch] col-span-4 col-start-5" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
+    <section class="my-16 max-w-[65ch] col-span-4 col-start-5" data-scroll-reveal='{"animation": "slideUp", "delay": 100, "duration": 600}'>
       <div class="prose prose-stone max-w-none">
         <PortableTextComponent value={about.bio} client:load />
       </div>
@@ -38,105 +38,4 @@ if (!about) {
   </div>
 </Layout>
 
-<style>
-  /* Scroll reveal animations */
-  [data-scroll-reveal] {
-    opacity: 0;
-    transition: none;
-  }
 
-  [data-scroll-reveal].scroll-revealed {
-    opacity: 1;
-  }
-</style>
-
-<script>
-  // Scroll reveal functionality
-  class ScrollReveal {
-    private observer: IntersectionObserver | null = null;
-
-    constructor() {
-      this.setupScrollReveal();
-    }
-
-    private setupScrollReveal(): void {
-      if (!('IntersectionObserver' in window)) return;
-
-      this.observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            const config = this.getElementConfig(element);
-            
-            setTimeout(() => {
-              this.triggerScrollReveal(element, config);
-            }, config.delay || 0);
-            
-            this.observer?.unobserve(element);
-          }
-        });
-      }, {
-        threshold: 0.1,
-        rootMargin: '-50px 0px'
-      });
-
-      // Observe elements with scroll reveal
-      document.querySelectorAll('[data-scroll-reveal]').forEach(el => {
-        const element = el as HTMLElement;
-        const config = this.getElementConfig(element);
-        
-        // Set initial state
-        element.style.opacity = '0';
-        element.style.transform = this.getInitialTransform(config.animation);
-        element.style.transition = 'none';
-        
-        this.observer?.observe(element);
-      });
-    }
-
-    private getElementConfig(element: HTMLElement) {
-      try {
-        const configAttr = element.getAttribute('data-scroll-reveal');
-        if (configAttr) {
-          return { 
-            animation: 'fadeIn', 
-            duration: 500, 
-            delay: 0, 
-            ...JSON.parse(configAttr) 
-          };
-        }
-      } catch (error) {
-        console.warn('Invalid scroll reveal config:', error);
-      }
-      return { animation: 'fadeIn', duration: 500, delay: 0 };
-    }
-
-    private triggerScrollReveal(element: HTMLElement, config: any): void {
-      element.style.transition = `all ${config.duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-      
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          element.style.opacity = '1';
-          element.style.transform = 'none';
-          element.classList.add('scroll-revealed');
-        });
-      });
-    }
-
-    private getInitialTransform(animation: string): string {
-      switch (animation) {
-        case 'slideUp': return 'translateY(30px)';
-        case 'slideLeft': return 'translateX(30px)';
-        case 'slideRight': return 'translateX(-30px)';
-        case 'scale': return 'scale(0.9)';
-        case 'fadeIn': 
-        default: return 'translateY(20px)';
-      }
-    }
-  }
-
-  // Initialize scroll reveal when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    new ScrollReveal();
-  });
-</script>

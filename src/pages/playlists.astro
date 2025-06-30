@@ -75,7 +75,7 @@ const sortedYears = Object.keys(playlistsByYear)
   <div class="py-16" class="mb-24">
     <header class="mb-24">
       <h1 class="text-4xl font-serif mb-4">Playlists</h1>
-      <p class="text-xl text-stone-500">Monthly music curation spanning different moods and moments</p>
+      <p class="text-xl text-stone-500">The sound index—a monthly personal timeline in music.</p>
     </header>
 
     <!-- Filter Section -->
@@ -110,102 +110,7 @@ const sortedYears = Object.keys(playlistsByYear)
   </div>
 </Layout>
 
-<style>
-  /* Scroll reveal animations */
-  [data-scroll-reveal] {
-    opacity: 0;
-    transition: none;
-  }
-
-  [data-scroll-reveal].scroll-revealed {
-    opacity: 1;
-  }
-</style>
-
 <script>
-  // Scroll reveal functionality
-  class ScrollReveal {
-    private observer: IntersectionObserver | null = null;
-
-    constructor() {
-      this.setupScrollReveal();
-    }
-
-    private setupScrollReveal(): void {
-      if (!('IntersectionObserver' in window)) return;
-
-      this.observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            const config = this.getElementConfig(element);
-            
-            setTimeout(() => {
-              this.triggerScrollReveal(element, config);
-            }, config.delay || 0);
-            
-            this.observer?.unobserve(element);
-          }
-        });
-      }, {
-        threshold: 0.1,
-        rootMargin: '-50px 0px'
-      });
-
-      // Observe elements with scroll reveal
-      document.querySelectorAll('[data-scroll-reveal]').forEach(el => {
-        const element = el as HTMLElement;
-        const config = this.getElementConfig(element);
-        
-        // Set initial state
-        element.style.opacity = '0';
-        element.style.transform = this.getInitialTransform(config.animation);
-        element.style.transition = 'none';
-        
-        this.observer?.observe(element);
-      });
-    }
-
-    private getElementConfig(element: HTMLElement) {
-      try {
-        const configAttr = element.getAttribute('data-scroll-reveal');
-        if (configAttr) {
-          return { 
-            animation: 'fadeIn', 
-            duration: 300, 
-            delay: 0, 
-            ...JSON.parse(configAttr) 
-          };
-        }
-      } catch (error) {
-        console.warn('Invalid scroll reveal config:', error);
-      }
-      return { animation: 'fadeIn', duration: 300, delay: 0 };
-    }
-
-    private triggerScrollReveal(element: HTMLElement, config: any): void {
-      element.style.transition = `all ${config.duration}ms cubic-bezier(0.4, 0, 0.2, 1)`;
-      
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          element.style.opacity = '1';
-          element.style.transform = 'none';
-          element.classList.add('scroll-revealed');
-        });
-      });
-    }
-
-    private getInitialTransform(animation: string): string {
-      switch (animation) {
-        case 'slideUp': return 'translateY(30px)';
-        case 'slideLeft': return 'translateX(30px)';
-        case 'slideRight': return 'translateX(-30px)';
-        case 'scale': return 'scale(0.9)';
-        case 'fadeIn': 
-        default: return 'translateY(20px)';
-      }
-    }
-  }
 
   // Playlist filtering functionality
   class PlaylistFilter {
@@ -306,9 +211,8 @@ const sortedYears = Object.keys(playlistsByYear)
     }
   }
 
-  // Initialize scroll reveal and playlist filter when DOM is ready
+  // Initialize playlist filter when DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
-    new ScrollReveal();
     new PlaylistFilter();
   });
 </script>

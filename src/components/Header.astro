@@ -21,9 +21,9 @@ const currentPath = Astro.url.pathname;
 
 <header class="w-full">
   <div class="w-full h-4 bg-orange-500 rounded-b-lg" />
-  <div class="py-6 container-grid">
-    <h1 class="font-sans col-span-4 text-stone-400">Jeff Herrera — Creative Director</h1>
-    <nav class="col-span-4">
+  <div class="py-4 md:py-6 gap-2 md:gap-0 container-grid">
+    <h1 class="font-sans text-center md:text-left col-span-12 md:col-span-6 lg:col-span-4 text-stone-400">Jeff Herrera — Creative Director</h1>
+    <nav class="justify-self-center md:justify-self-end lg:justify-self-start col-span-12 md:col-span-6 lg:col-span-4">
       <ul class="flex gap-4">
         <li class="relative">
           <a href="/" class={`transition-colors ${currentPath === '/' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
@@ -47,10 +47,10 @@ const currentPath = Astro.url.pathname;
         </li>
       </ul>
     </nav>
-    <div class="col-span-2 counter">
+    <div class="lg:block hidden col-span-2 counter">
       <p class="text-stone-400">NYC \ <NYCClock /></p>
     </div>
-    <div class="col-span-2 social">
+    <div class="justify-self-center md:justify-self-start lg:justify-self-end col-span-12 md:col-span-2 social">
       <ul class="flex gap-3 justify-end">
         {about?.contact?.instagram && (
           <li><a href={about.contact.instagram} target="_blank" rel="noopener noreferrer" class="text-stone-400 hover:text-orange-500 transition-colors">IG</a></li>
