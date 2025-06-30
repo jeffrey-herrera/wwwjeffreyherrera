@@ -21,27 +21,27 @@ const currentPath = Astro.url.pathname;
 
 <header class="w-full">
   <div class="w-full h-4 bg-orange-500 rounded-b-lg" />
-  <div class="py-4 md:py-6 gap-2 md:gap-0 container-grid">
+  <div class="py-4 md:py-6 gap-6 md:gap-0 container-grid">
     <h1 class="font-sans text-center md:text-left col-span-12 md:col-span-6 lg:col-span-4 text-stone-400">Jeff Herrera — Creative Director</h1>
     <nav class="justify-self-center md:justify-self-end lg:justify-self-start col-span-12 md:col-span-6 lg:col-span-4">
       <ul class="flex gap-4">
         <li class="relative">
-          <a href="/" class={`transition-colors ${currentPath === '/' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
+          <a href="/" class={`px-4 py-3 rounded-lg md:rounded-none border border-stone-200 md:border-none md:px-0 lg:py-0 transition-colors ${currentPath === '/' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>Work<sup class="text-xs ml-1">{counts.projects}</sup></span>
           </a>
         </li>
         <li class="relative">
-          <a href="/about" class={`transition-colors ${currentPath === '/about' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
+          <a href="/about" class={`px-4 py-3 rounded-lg md:rounded-none border border-stone-200 md:border-none md:px-0 lg:py-0 transition-colors ${currentPath === '/about' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>About</span>
           </a>
         </li>
         <li class="relative">
-          <a href="/playground" class={`transition-colors ${currentPath === '/playground' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
+          <a href="/playground" class={`px-4 py-3 rounded-lg md:rounded-none border border-stone-200 md:border-none md:px-0 lg:py-0 transition-colors ${currentPath === '/playground' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>Playground<sup class="text-xs ml-1">{counts.playground}</sup></span>
           </a>
         </li>
         <li class="relative">
-          <a href="/playlists" class={`transition-colors ${currentPath === '/playlists' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
+          <a href="/playlists" class={`px-4 py-3 rounded-lg md:rounded-none border border-stone-200 md:border-none md:px-0 lg:py-0 transition-colors ${currentPath === '/playlists' ? 'text-stone-400 pointer-events-none' : 'hover:text-orange-500'}`}>
             <span>Playlists<sup class="text-xs ml-1">{counts.playlists}</sup></span>
           </a>
         </li>
@@ -51,15 +51,15 @@ const currentPath = Astro.url.pathname;
       <p class="text-stone-400">NYC \ <NYCClock /></p>
     </div>
     <div class="justify-self-center md:justify-self-start lg:justify-self-end col-span-12 md:col-span-2 social">
-      <ul class="flex gap-3 justify-end">
+      <ul class="flex gap-5 justify-end">
         {about?.contact?.instagram && (
-          <li><a href={about.contact.instagram} target="_blank" rel="noopener noreferrer" class="text-stone-400 hover:text-orange-500 transition-colors">IG</a></li>
+          <li><a href={about.contact.instagram} target="_blank" rel="noopener noreferrer" class="text-stone-950 hover:text-orange-500 transition-colors">IG</a></li>
         )}
         {about?.contact?.linkedin && (
-          <li><a href={about.contact.linkedin} target="_blank" rel="noopener noreferrer" class="text-stone-400 hover:text-orange-500 transition-colors">LI</a></li>
+          <li><a href={about.contact.linkedin} target="_blank" rel="noopener noreferrer" class="text-stone-950 hover:text-orange-500 transition-colors">LI</a></li>
         )}
         {about?.contact?.email && (
-          <li><a href={`mailto:${about.contact.email}`} class="text-stone-400 hover:text-orange-500 transition-colors">EMAIL</a></li>
+          <li><a href={`mailto:${about.contact.email}`} class="text-stone-950 hover:text-orange-500 transition-colors">EMAIL</a></li>
         )}
       </ul>
     </div>

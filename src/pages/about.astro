@@ -17,23 +17,23 @@ if (!about) {
 
 <Layout title="About">
   <div class="bg-stone-50 container-grid">
-    <section class="my-16 max-w-[65ch] col-span-4">
+    <section class="mt-12 xl:my-16 max-w-[65ch] col-span-4">
       <h1 class="text-4xl font-serif mb-4">About</h1>
     </section>
-    <section class="fixed bottom-8 left-8 z-10" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
+    <section class="mb-16 xl:my-16 max-w-[65ch] col-span-12 xl:col-span-4 xl:col-start-5" data-scroll-reveal='{"animation": "slideUp", "delay": 100, "duration": 600}'>
+      <div class="prose prose-stone max-w-none">
+        <PortableTextComponent value={about.bio} client:load />
+      </div>
+      
+      <Button variant="tertiary" href={`mailto:${about.contact.email}`} class="mt-8">Get in touch</Button>
+    </section>
+    <section class="xl:fixed xl:bottom-8 xl:left-8 z-10 col-span-12" data-scroll-reveal='{"animation": "slideUp", "delay": 200, "duration": 600}'>
       {about.profileImage && (
         <StackedProfileImage 
           profileImage={about.profileImage}
           title={about.title}
         />
       )}
-    </section>
-    <section class="my-16 max-w-[65ch] col-span-4 col-start-5" data-scroll-reveal='{"animation": "slideUp", "delay": 100, "duration": 600}'>
-      <div class="prose prose-stone max-w-none">
-        <PortableTextComponent value={about.bio} client:load />
-      </div>
-
-      <Button variant="tertiary" href={`mailto:${about.contact.email}`} class="mt-8">Get in touch</Button>
     </section>
   </div>
 </Layout>

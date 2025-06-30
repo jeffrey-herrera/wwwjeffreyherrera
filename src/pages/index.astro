@@ -23,23 +23,20 @@ const featuredPlaylists = allPlaylists.filter(p => p.featured).slice(0, 3);
 <Layout>
   <Hero />
   <section class="sticky top-48">
-    <div class="w-[9.375rem] rounded-t-lg h-6 bg-orange-500 mt-48" />
-         <div class="selected-work w-full h-[9.375rem] relative overflow-hidden rounded-tr-lg" id="marquee-section" data-speed="80">
+    <div class="w-[9.375rem] rounded-t-lg h-6 bg-orange-500 mt-24 md:mt-48" />
+        <div class="selected-work w-full h-16 md:h-[9.375rem] relative overflow-hidden rounded-tr-lg bg-orange-500" id="marquee-section" data-speed="80">
        <!-- Optimized background image -->
-       <Image 
-         src="/images/selected-work.png" 
-         alt="Selected work background"
-         width={1920}
-         height={150}
-         class="absolute inset-0 w-full h-full object-cover object-top"
-         loading="eager"
-         format="webp"
-       />
+          <Image 
+            src="/images/selected-work.png" 
+            alt="Selected work background"
+            width={1920}
+            height={150}
+            class="absolute inset-0 w-full h-full object-contain md:object-cover object-bottom md:object-top"
+            loading="eager"
+            format="webp"
+          />
        <div class="marquee-container h-full flex items-center relative z-10">
            <div class="marquee-content flex items-center gap-16 whitespace-nowrap flex-nowrap" id="marquee-content">
-         <!-- Content will be generated dynamically by JavaScript -->
-         <span class="text-orange-100 text-md font-light uppercase">↓</span>
-         <span class="text-orange-100 text-md font-light uppercase">Selected&nbsp;work</span>
        </div>
        </div>
      </div>
@@ -94,8 +91,8 @@ const featuredPlaylists = allPlaylists.filter(p => p.featured).slice(0, 3);
       // Generate content with alternating pattern
       let contentHTML = '';
       for (let i = 0; i < totalUnits; i++) {
-        contentHTML += '<span class="text-orange-100 text-md font-light uppercase">↓</span>';
-        contentHTML += '<span class="text-orange-100 text-md font-light uppercase">Selected&nbsp;work</span>';
+        contentHTML += '<span class="text-orange-100 text-sm md:text-base font-light uppercase pointer-events-none">↓</span>';
+        contentHTML += '<span class="text-orange-100 text-sm md:text-base font-light uppercase pointer-events-none">Selected&nbsp;work</span>';
       }
       
       this.content.innerHTML = contentHTML;
