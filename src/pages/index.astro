@@ -23,15 +23,15 @@ const featuredPlaylists = allPlaylists.filter(p => p.featured).slice(0, 3);
 <Layout>
   <Hero />
   <section class="sticky top-48">
-    <div class="w-[9.375rem] rounded-t-lg h-6 bg-orange-500 mt-24 md:mt-48" />
-        <div class="selected-work w-full h-16 md:h-[9.375rem] relative overflow-hidden rounded-tr-lg bg-orange-500" id="marquee-section" data-speed="80">
+    <div class="w-[33%] md:w-[9.375rem] rounded-t-lg h-4 md:h-6 bg-orange-500 mt-24 md:mt-48" />
+        <div class="selected-work w-full h-24 md:h-[9.375rem] relative overflow-hidden rounded-tr-lg bg-orange-500" id="marquee-section" data-speed="80">
        <!-- Optimized background image -->
           <Image 
             src="/images/selected-work.png" 
             alt="Selected work background"
             width={1920}
             height={150}
-            class="absolute inset-0 w-full h-full object-contain md:object-cover object-bottom md:object-top"
+            class="absolute inset-0 w-full h-full object-contain scale-115 md:scale-100 md:object-cover object-center md:object-top"
             loading="eager"
             format="webp"
           />
