@@ -67,6 +67,7 @@ export default defineConfig({
 
   projectId: 'wtlgwnno',
   dataset: 'production',
+  apiVersion: '2022-06-30',
   
   // Performance optimizations
   document: {
@@ -121,8 +122,7 @@ export default defineConfig({
                   .title('Portfolio')
                   .filter('_type == "project"')
                   .defaultOrdering([
-                    {field: 'featured', direction: 'desc'},
-                    {field: 'title', direction: 'asc'}
+                    {field: '_createdAt', direction: 'desc'}
                   ])
               ),
             

@@ -2,28 +2,38 @@
 export const prerender = true;
 
 import Layout from '../layouts/Layout.astro';
-import { getAllProjects, getAllPlaylists } from '../sanity/queries';
-import type { Project, Playlist } from '../sanity/types';
-import SanityImage from '../components/SanityImage.astro';
-import Link from '../components/Link.astro';
-import ArrowLink from '../components/ArrowLink.astro';
-import Badge from '../components/Badge.astro';
-import Button from '../components/Button.astro';
+import { getAllProjects } from '../sanity/queries';
 import Hero from '../components/Hero.astro';
+import WorkItem from '../components/WorkItem.astro';
 import { Image } from 'astro:assets';
 
 const allProjects = await getAllProjects();
-const allPlaylists = await getAllPlaylists();
 
-// Get featured items (just take first few for now)
-const featuredProjects = allProjects.filter(p => p.featured).slice(0, 3);
-const featuredPlaylists = allPlaylists.filter(p => p.featured).slice(0, 3);
+// Filter projects by category for work grid (case-insensitive)
+const brandProjects = allProjects.filter(p => p.category?.toLowerCase() === 'brand').slice(0, 5);
+const physicalProjects = allProjects.filter(p => p.category?.toLowerCase() === 'physical').slice(0, 5);
+const digitalProjects = allProjects.filter(p => p.category?.toLowerCase() === 'digital').slice(0, 5);
+
+// Fallback: if no specific categories, distribute all projects
+const fallbackProjects = allProjects.slice(0, 15);
+const finalBrandProjects = brandProjects.length > 0 ? brandProjects : fallbackProjects.slice(0, 5);
+const finalPhysicalProjects = physicalProjects.length > 0 ? physicalProjects : fallbackProjects.slice(5, 10);
+const finalDigitalProjects = digitalProjects.length > 0 ? digitalProjects : fallbackProjects.slice(10, 15);
+
+// Debug log to see what we have
+console.log('All projects:', allProjects.length);
+console.log('Brand projects:', brandProjects.length);
+console.log('Physical projects:', physicalProjects.length);
+console.log('Digital projects:', digitalProjects.length);
+if (allProjects.length > 0) {
+  console.log('First project categories:', allProjects.slice(0, 3).map(p => ({ title: p.title, category: p.category })));
+}
 ---
 
 <Layout>
   <Hero />
-  <section class="sticky top-48">
-    <div class="w-[33%] md:w-[9.375rem] rounded-t-lg h-4 md:h-6 bg-orange-500 mt-24 md:mt-48" />
+  <section class="sticky top-16">
+    <div class="w-[33%] rounded-t-sm h-4 md:h-6 bg-orange-500 mt-24 md:mt-48 pb-8" />
         <div class="selected-work w-full h-24 md:h-[9.375rem] relative overflow-hidden rounded-tr-lg bg-orange-500" id="marquee-section" data-speed="80">
        <!-- Optimized background image -->
           <Image 
@@ -35,11 +45,71 @@ const featuredPlaylists = allPlaylists.filter(p => p.featured).slice(0, 3);
             loading="eager"
             format="webp"
           />
-       <div class="marquee-container h-full flex items-center relative z-10">
+       <div class="marquee-container h-full flex items-center relative z-10 pb-4">
            <div class="marquee-content flex items-center gap-16 whitespace-nowrap flex-nowrap" id="marquee-content">
        </div>
        </div>
      </div>
+  </section>
+  <section class="sticky top-16 -mt-10">
+    <div class="w-[33%] ml-[33%] rounded-t-sm h-4 md:h-6 bg-stone-950 pb-8" />
+    <div class="w-full rounded-tr-lg bg-stone-950 block py-8 px-6 text-stone-300">
+      <div class="brand-container mb-32">
+        <div class="work-header flex gap-1 items-center mb-4">
+          <span class="text-xs text-orange-400 text-right leading-none">01<br />↗</span>
+          <h3 class="text-stone-50 text-xl lg:text-3xl font-serif tracking-tight">Brand</h3>
+        </div>
+        <div class="work-grid">
+          {finalBrandProjects.length > 0 ? (
+            <>
+              <WorkItem project={finalBrandProjects[0]} size="large" />
+              {finalBrandProjects[1] && <WorkItem project={finalBrandProjects[1]} size="small" />}
+              {finalBrandProjects[2] && <WorkItem project={finalBrandProjects[2]} size="small" />}
+              {finalBrandProjects[3] && <WorkItem project={finalBrandProjects[3]} size="small" />}
+              {finalBrandProjects[4] && <WorkItem project={finalBrandProjects[4]} size="small" />}
+            </>
+          ) : (
+            <div class="text-stone-400 text-center py-8">No Brand projects found</div>
+          )}
+        </div>
+      </div>
+      <div class="physical-container mb-32">
+        <div class="work-header flex gap-1 items-center mb-4">
+          <span class="text-xs text-orange-400 text-right leading-none">02<br />↗</span>
+          <h3 class="text-stone-50 text-xl lg:text-3xl font-serif tracking-tight">Physical</h3>
+        </div>
+        <div class="work-grid">
+          {finalPhysicalProjects.length > 0 ? (
+            <>
+              <WorkItem project={finalPhysicalProjects[0]} size="large" />
+              {finalPhysicalProjects[1] && <WorkItem project={finalPhysicalProjects[1]} size="small" />}
+              {finalPhysicalProjects[2] && <WorkItem project={finalPhysicalProjects[2]} size="small" />}
+              {finalPhysicalProjects[3] && <WorkItem project={finalPhysicalProjects[3]} size="small" />}
+              {finalPhysicalProjects[4] && <WorkItem project={finalPhysicalProjects[4]} size="small" />}
+            </>
+          ) : (
+            <div class="text-stone-400 text-center py-8">No Physical projects found</div>
+          )}
+        </div>
+      </div>
+      <div class="digital-container mb-32">
+        <div class="work-header flex gap-1 items-center mb-4">
+          <span class="text-xs text-orange-400 text-right leading-none">03<br />↗</span>
+          <h3 class="text-stone-50 text-xl lg:text-3xl font-serif tracking-tight">Digital</h3>
+        </div>
+        <div class="work-grid">
+          {finalDigitalProjects.length > 0 ? (
+            <>
+              <WorkItem project={finalDigitalProjects[0]} size="large" />
+              {finalDigitalProjects[1] && <WorkItem project={finalDigitalProjects[1]} size="small" />}
+              {finalDigitalProjects[2] && <WorkItem project={finalDigitalProjects[2]} size="small" />}
+              {finalDigitalProjects[3] && <WorkItem project={finalDigitalProjects[3]} size="small" />}
+              {finalDigitalProjects[4] && <WorkItem project={finalDigitalProjects[4]} size="small" />}
+            </>
+          ) : (
+            <div class="text-stone-400 text-center py-8">No Digital projects found</div>
+          )}
+        </div>
   </section>
 </Layout>
 

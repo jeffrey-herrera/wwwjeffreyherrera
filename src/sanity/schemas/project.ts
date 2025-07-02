@@ -52,27 +52,6 @@ export default defineType({
       description: 'Technologies and skills used in this project'
     }),
     defineField({
-      name: 'featured',
-      title: 'Featured',
-      type: 'boolean',
-      description: 'Show this project on the homepage',
-      initialValue: false
-    }),
-    defineField({
-      name: 'featuredOrder',
-      title: 'Featured Order',
-      type: 'number',
-      description: 'Order for featured projects (lower numbers appear first)',
-      hidden: ({ document }) => !document?.featured,
-      validation: (Rule) => Rule.min(0)
-    }),
-    defineField({
-      name: 'year',
-      title: 'Year',
-      type: 'number',
-      validation: (Rule) => Rule.required().min(2020).max(new Date().getFullYear() + 1)
-    }),
-    defineField({
       name: 'image',
       title: 'Project Image',
       type: 'image',
@@ -120,22 +99,12 @@ export default defineType({
       type: 'url',
       description: 'Link to the live project'
     }),
-    defineField({
-      name: 'githubUrl',
-      title: 'GitHub URL',
-      type: 'url',
-      description: 'Link to the project repository'
-    })
   ],
   orderings: [
     {
-      title: 'Featured First',
-      name: 'featuredFirst',
-      by: [
-        { field: 'featured', direction: 'desc' },
-        { field: 'featuredOrder', direction: 'asc' },
-        { field: '_createdAt', direction: 'desc' }
-      ]
+      title: 'Recently Created',
+      name: 'recentlyCreated',
+      by: [{ field: '_createdAt', direction: 'desc' }]
     },
     {
       title: 'Title A-Z',
@@ -152,23 +121,17 @@ export default defineType({
     select: {
       title: 'title',
       category: 'category',
-      featured: 'featured',
-      featuredOrder: 'featuredOrder',
-      year: 'year',
       media: 'image',
       tags: 'tags'
     },
     prepare(selection) {
-      const { title, category, featured, featuredOrder, year, media, tags } = selection
+      const { title, category, media, tags } = selection
       const categoryLabel = category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Project'
-      const featuredBadge = featured ? '⭐ ' : ''
-      const orderInfo = featured && featuredOrder ? ` #${featuredOrder}` : ''
-      const yearInfo = year ? ` • ${year}` : ''
       const tagCount = tags?.length ? ` • ${tags.length} tags` : ''
       
       return {
-        title: `${featuredBadge}${title}`,
-        subtitle: `${categoryLabel}${yearInfo}${orderInfo}${tagCount}${featured ? ' • Featured' : ''}`,
+        title: title,
+        subtitle: `${categoryLabel}${tagCount}`,
         media: media
       }
     }

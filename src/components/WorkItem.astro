@@ -1,0 +1,50 @@
+---
+import type { Project } from '../sanity/types';
+import SanityImage from './SanityImage.astro';
+
+export interface Props {
+  project: Project;
+  size: 'large' | 'small';
+}
+
+const { project, size } = Astro.props;
+
+const imageAspectClasses = {
+  large: 'aspect-video', // 16:9 aspect ratio 
+  small: 'aspect-video'  // Same 16:9 aspect ratio for small items
+};
+---
+
+<div class={`work-item work-item-${size} cursor-none`}>
+  <a href={`/work/${project.slug.current}`} class="block group">
+    <div class={`work-item-image ${imageAspectClasses[size]} bg-stone-300 rounded-sm overflow-hidden relative`}>
+      <SanityImage 
+        image={project.image}
+        alt={project.title}
+        class="object-cover w-full h-full transition-all duration-500 group-hover:scale-110 group-hover:blur-sm"
+      />
+      
+      <!-- Hover overlay -->
+      <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+        <h3 class="text-white font-serif text-2xl lg:text-4xl font-light tracking-tight text-center px-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+          {project.title}
+        </h3>
+      </div>
+    </div>
+    
+    <!-- Project name - hides on hover -->
+    <p class="text-stone-300 text-sm mt-2 opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+      {project.title}
+    </p>
+  </a>
+</div>
+
+<style>
+  .work-item {
+    transition: transform 0.3s ease;
+  }
+  
+  .work-item:hover {
+    z-index: 10;
+  }
+</style>

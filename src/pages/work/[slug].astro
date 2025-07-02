@@ -6,19 +6,21 @@ import { getProjectBySlug, getAllProjects } from '../../sanity/queries'
 export async function getStaticPaths() {
   const projects = await getAllProjects()
   
-  return projects.map(project => ({
-    params: { slug: project.slug.current },
-    props: { project }
-  }))
+  return projects
+    .filter(project => project.slug?.current)
+    .map(project => ({
+      params: { slug: project.slug.current },
+      props: { project }
+    }))
 }
 
 const { project } = Astro.props
 
 // Simple related content (just get latest projects for now)
 const allProjects = await getAllProjects()
-const relatedProjects = allProjects.filter(p => p.slug.current !== project.slug.current).slice(0, 3)
+const relatedProjects = allProjects.filter(p => p.slug?.current && project.slug?.current && p.slug.current !== project.slug.current).slice(0, 3)
 
-const projectMeta = `${project.category} • ${project.year}`
+const projectMeta = project.category ? project.category.charAt(0).toUpperCase() + project.category.slice(1) : 'Project'
 ---
 
 <Layout 
@@ -40,11 +42,6 @@ const projectMeta = `${project.category} • ${project.year}`
           <span class="px-3 py-1 bg-stone-100 text-stone-700 rounded-full text-sm">
             {projectMeta}
           </span>
-          {project.featured && (
-            <span class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
-              Featured
-            </span>
-          )}
         </div>
         
         <p class="text-xl text-stone-600 leading-relaxed">
@@ -55,9 +52,8 @@ const projectMeta = `${project.category} • ${project.year}`
       {project.image && (
         <div class="mb-12">
           <SanityImage 
-            source={project.image} 
+            image={project.image} 
             alt={project.title}
-            variant="hero"
             class="w-full rounded-lg shadow-lg"
           />
         </div>
@@ -96,14 +92,13 @@ const projectMeta = `${project.category} • ${project.year}`
         <h2 class="text-2xl font-serif mb-8">Related Projects</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           {relatedProjects.map(relatedProject => (
-            <a href={`/work/${relatedProject.slug.current}`} class="group">
+            <a href={`/work/${relatedProject.slug?.current}`} class="group">
               <div class="bg-white rounded-lg border border-stone-200 overflow-hidden hover:shadow-lg transition-shadow">
                 {relatedProject.image && (
                   <div class="aspect-video bg-stone-100">
                     <SanityImage 
-                      source={relatedProject.image} 
+                      image={relatedProject.image} 
                       alt={relatedProject.title}
-                      variant="thumbnail"
                       class="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />
                   </div>

@@ -26,9 +26,6 @@ export interface SanityImage {
 export interface Project extends SanityDocument {
   _type: 'project'
   title: string
-  featured: boolean
-  featuredOrder?: number
-  year: number
   description: string
   tags: string[]
   slug: Slug
@@ -37,7 +34,6 @@ export interface Project extends SanityDocument {
   gallery?: SanityImage[]
   content?: PortableTextBlock[]
   externalUrl?: string
-  githubUrl?: string
 }
 
 // Playlist type based on your existing schema

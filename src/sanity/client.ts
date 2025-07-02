@@ -5,7 +5,7 @@ export const sanityClient = createClient({
   dataset: 'production',
   token: import.meta.env.SANITY_API_TOKEN,
   useCdn: false,
-  apiVersion: '2024-01-01',
+  apiVersion: '2022-06-30', // Use stable API version
   // Performance optimizations
   stega: false, // Disable live editing for better performance
   perspective: 'published', // Only fetch published content by default

@@ -6,6 +6,7 @@ import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
 
 interface Props {
   source?: SanityImageSource | null
+  image?: SanityImageSource | null
   alt: string
   variant?: 'thumbnail' | 'medium' | 'large' | 'hero' | 'profile'
   class?: string
@@ -15,12 +16,16 @@ interface Props {
 
 const {
   source,
+  image,
   alt,
   variant = 'medium',
   class: className = '',
   priority = false,
   quality = 85
 } = Astro.props
+
+// Use either source or image prop
+const imageSource = source || image
 
 const builder = imageUrlBuilder(sanityClient)
 
@@ -34,13 +39,13 @@ const variantSizes = {
 
 const { width, height } = variantSizes[variant]
 
-// Generate image URL if source exists and is valid
+// Generate image URL if imageSource exists and is valid
 let imageUrl: string | null = null
 
-if (source) {
+if (imageSource) {
   try {
     imageUrl = builder
-      .image(source)
+      .image(imageSource)
       .width(width)
       .height(height)
       .quality(quality)
@@ -53,12 +58,11 @@ if (source) {
 }
 ---
 
-{!source || !imageUrl ? (
+{!imageSource || !imageUrl ? (
   <div 
-    class={`bg-gray-200 flex items-center justify-center text-gray-500 ${className}`}
-    style={`width: ${width}px; height: ${height}px;`}
+    class={`bg-gray-200 flex items-center justify-center text-gray-500 text-sm ${className}`}
   >
-    No image
+    {!imageSource ? 'No image source' : 'Failed to load'}
   </div>
 ) : (
   <Image

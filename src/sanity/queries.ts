@@ -49,21 +49,19 @@ async function query<T>(
 // Project queries
 export async function getAllProjects(): Promise<Project[]> {
   return query<Project[]>(
-    groq`*[_type == "project"] | order(featured desc, featuredOrder asc, _createdAt desc) {
+    groq`*[_type == "project"] | order(_createdAt desc) {
       _id,
       title,
       slug,
       description,
-      "tags": tags[]->name,
+      category,
+      tags,
       "image": image {
         asset,
         alt,
         caption
       },
-      featured,
-      featuredOrder,
-      liveUrl,
-      githubUrl,
+      externalUrl,
       "content": content,
       _createdAt,
       _updatedAt
@@ -80,17 +78,15 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
       title,
       slug,
       description,
+      category,
       content,
-      "tags": tags[]->name,
+      tags,
       "image": image {
         asset,
         alt,
         caption
       },
-      featured,
-      featuredOrder,
-      liveUrl,
-      githubUrl,
+      externalUrl,
       _createdAt,
       _updatedAt
     }`,

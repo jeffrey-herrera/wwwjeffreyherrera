@@ -182,6 +182,27 @@
     gap: 12px;
   }
 
+  /* Work grid - simple flexbox layout */
+  .work-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+
+  /* Large item - max 6 columns (50% width) */
+  .work-item-large {
+    flex: 0 0 calc(50% - 12px);
+    max-width: calc(50% - 12px);
+  }
+
+  /* Small items are smaller and flexible */
+  .work-item-small {
+    flex: 1;
+    min-width: 200px;
+  }
+
+
+
   /* Scroll reveal animations */
   [data-scroll-reveal] {
     opacity: 0;
